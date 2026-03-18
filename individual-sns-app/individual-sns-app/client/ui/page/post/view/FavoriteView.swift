@@ -10,14 +10,18 @@ struct FavoriteView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(vm.favoritePosts) { post in
-                    PostCardView(post: post) {
-                        vm.toggleFavorite(post: post)
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    ForEach(vm.posts) { post in
+                        PostView(post: post) {
+                            vm.toggleFavorite(post: post)
+                        }
                     }
                 }
+                .padding(.top)
             }
             .navigationTitle("お気に入り")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 }

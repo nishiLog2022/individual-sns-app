@@ -5,27 +5,112 @@
 //  Created by taichi nishimura on R 8/03/17.
 //
 import SwiftUI
+import PhotosUI
+
 struct CreatePostView: View {
     @ObservedObject var vm: PostViewModel
-    @State private var caption = ""
+    
+    @State private var caption: String = ""
+    @State private var selectedItems: [PhotosPickerItem] = []
+    @State private var selectedImages: [UIImage] = []
     
     var body: some View {
         NavigationView {
             VStack {
-                TextEditor(text: $caption)
-                    .frame(height: 200)
-                    .border(Color.gray)
-                    .padding()
                 
-                Button("投稿する") {
-                    vm.addPost(caption: caption)
-                    caption = ""
+                // ① 画像選択エリア
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack {
+                        ForEach(selectedImages, id: \.self) { image in
+                            Image(uiImage: image)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 100, height: 100)
+                                .clipped()
+                                .cornerRadius(8)
+                        }
+                        
+                        PhotosPicker(
+                            selection: $selectedItems,
+                            maxSelectionCount: 5,
+                            matching: .images
+                        ) {
+                            ZStack {
+                                Rectangle()
+                                    .fill(Color.gray.opacity(0.2))
+                                    .frame(width: 100, height: 100)
+                                
+                                Image(systemName: "plus")
+                                    .font(.title)
+                            }
+                        }
+                    }
+                    .padding()
+                }
+                
+                // ② キャプション入力
+                VStack(alignment: .leading) {
+                    Text("キャプション")
+                        .font(.headline)
+                    
+                    TextEditor(text: $caption)
+                        .frame(height: 150)
+                        .padding(8)
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(10)
                 }
                 .padding()
                 
                 Spacer()
+                
+                // ③ 投稿ボタン
+                Button(action: createPost) {
+                    Text("投稿する")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(caption.isEmpty ? Color.gray : Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
+                }
+                .disabled(caption.isEmpty)
+                .padding()
             }
-            .navigationTitle("作成")
+            .navigationTitle("投稿作成")
+            .navigationBarTitleDisplayMode(.inline)
+            .onChange(of: selectedItems) { _ in
+                loadImages()
+            }
         }
+    }
+}
+
+extension CreatePostView {
+    func loadImages() {
+        selectedImages = []
+        
+        for item in selectedItems {
+            Task {
+                if let data = try? await item.loadTransferable(type: Data.self),
+                   let uiImage = UIImage(data: data) {
+                    
+                    await MainActor.run {
+                        selectedImages.append(uiImage)
+                    }
+                }
+            }
+        }
+    }
+}
+
+extension CreatePostView {
+    func createPost() {
+        vm.addPost(caption: caption)
+        
+        // TODO: ここで画像保存（後で実装）
+        
+        caption = ""
+        selectedImages = []
+        selectedItems = []
     }
 }

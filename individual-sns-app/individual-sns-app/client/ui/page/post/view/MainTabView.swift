@@ -12,25 +12,49 @@ struct MainTabView: View {
     
     var body: some View {
         TabView {
-            HomeView(vm: vm)
+            
+            // ホーム
+            NavigationView {
+                HomeView(vm: vm)
+            }
+            .tabItem {
+                Image(systemName: "house")
+                Text("ホーム")
+            }
+            
+            // お気に入り
+            NavigationView {
+                FavoriteView(vm: vm)
+            }
+            .tabItem {
+                Image(systemName: "heart")
+                Text("お気に入り")
+            }
+            
+            // 投稿（モーダル）
+            CreatePostWrapperView(vm: vm)
                 .tabItem {
-                    Label("ホーム", systemImage: "house")
+                    Image(systemName: "plus.app.fill")
+                    Text("投稿")
                 }
             
-            CreatePostView(vm: vm)
-                .tabItem {
-                    Label("作成", systemImage: "plus.app")
-                }
+            // プロフィール
+            NavigationView {
+                ProfileView(vm: vm)
+            }
+            .tabItem {
+                Image(systemName: "square.grid.3x3")
+                Text("投稿一覧")
+            }
             
-            FavoriteView(vm: vm)
-                .tabItem {
-                    Label("お気に入り", systemImage: "heart")
-                }
-            
-            ProfileView(vm: vm)
-                .tabItem {
-                    Label("プロフィール", systemImage: "person")
-                }
+            // 設定
+            NavigationView {
+                SettingsView()
+            }
+            .tabItem {
+                Image(systemName: "gearshape")
+                Text("設定")
+            }
         }
     }
 }
