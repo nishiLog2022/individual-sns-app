@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct HomeView: View {
-    @ObservedObject var vm: PostViewModel
+    @ObservedObject var baseViewModel: AppBaseViewModel
     @State private var showCreate = false
     
     var body: some View {
         NavigationView {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    ForEach(vm.posts) { post in
+                    ForEach(baseViewModel.posts) { post in
                         PostView(post: post) {
-                            vm.toggleFavorite(post: post)
+                            baseViewModel.toggleFavorite(post: post)
                         }
                     }
                 }
@@ -26,21 +26,9 @@ struct HomeView: View {
             .navigationTitle("ホーム")
             .navigationBarTitleDisplayMode(.inline)
             
-//            // 👇 追加
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    Button {
-//                        showCreate = true
-//                    } label: {
-//                        Image(systemName: "plus")
-//                            .font(.title3)
-//                    }
-//                }
-//            }
-            
             // 👇 画面遷移
             .sheet(isPresented: $showCreate) {
-                CreatePostView(vm: vm)
+                CreatePostView(baseViewModel: baseViewModel)
             }
         }
     }

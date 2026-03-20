@@ -12,11 +12,13 @@ struct PostCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             
-            if let image = post.image {
-                Image(image)
+            if let firstPath = post.imagePaths.first,
+               let image = ImageStorage.shared.loadImage(fileName: firstPath) {
+                
+                Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
-                    .frame(height: 200)
+                    .frame(height: 300)
                     .clipped()
             }
             

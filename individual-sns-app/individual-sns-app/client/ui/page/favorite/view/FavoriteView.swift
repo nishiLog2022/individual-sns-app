@@ -6,15 +6,15 @@
 //
 import SwiftUI
 struct FavoriteView: View {
-    @ObservedObject var vm: PostViewModel
+    @ObservedObject var baseViewModel: AppBaseViewModel
     
     var body: some View {
         NavigationView {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    ForEach(vm.posts) { post in
+                    ForEach(baseViewModel.posts) { post in
                         PostView(post: post) {
-                            vm.toggleFavorite(post: post)
+                            baseViewModel.toggleFavorite(post: post)
                         }
                     }
                 }

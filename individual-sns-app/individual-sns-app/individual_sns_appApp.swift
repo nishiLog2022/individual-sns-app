@@ -25,7 +25,7 @@ struct individual_sns_appApp: App {
 
     var body: some Scene {
         WindowGroup {
-            MainTabView()
+            AppBaseView()
         }
         .modelContainer(sharedModelContainer)
     }

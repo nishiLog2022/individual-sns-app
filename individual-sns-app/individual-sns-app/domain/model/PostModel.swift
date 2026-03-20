@@ -6,11 +6,10 @@
 //
 import Foundation
 
-
 struct PostModel: Identifiable, Hashable {
     let id: UUID
     var caption: String
-    var image: String? // 仮（後でURLに変更）
+    var imagePaths: [String] // ← ここ重要
     var date: Date
     var isFavorite: Bool
 }

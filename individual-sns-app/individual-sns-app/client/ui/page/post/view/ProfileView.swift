@@ -6,7 +6,7 @@
 //
 import SwiftUI
 struct ProfileView: View {
-    @ObservedObject var vm: PostViewModel
+    @ObservedObject var baseViewModel: AppBaseViewModel
     
     let columns = [
         GridItem(.flexible()),
@@ -18,7 +18,7 @@ struct ProfileView: View {
         NavigationView {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 2) {
-                    ForEach(vm.posts) { post in
+                    ForEach(baseViewModel.posts) { post in
                         Rectangle()
                             .fill(Color.gray.opacity(0.3))
                             .frame(height: 120)

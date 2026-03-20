@@ -1,14 +1,13 @@
 //
-//  PostViewModel.swift
+//  AppBaseViewModel.swift
 //  individual-sns-app
 //
-//  Created by taichi nishimura on R 8/03/17.
+//  Created by taichi nishimura on R 8/03/20.
 //
-
 import Foundation
 import SwiftUI
 
-class PostViewModel: ObservableObject {
+class AppBaseViewModel: ObservableObject {
     @Published var posts: [PostModel] = []
     
     init() {

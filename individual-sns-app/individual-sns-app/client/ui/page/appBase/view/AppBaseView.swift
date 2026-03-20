@@ -1,21 +1,20 @@
 //
-//  MainTabView.swift
+//  AppBaseView.swift
 //  individual-sns-app
 //
-//  Created by taichi nishimura on R 8/03/17.
+//  Created by taichi nishimura on R 8/03/20.
 //
-
 import SwiftUI
 
-struct MainTabView: View {
-    @StateObject var vm = PostViewModel()
+struct AppBaseView: View {
+    @StateObject var baseViewModel: AppBaseViewModel = AppBaseViewModel()
     
     var body: some View {
         TabView {
             
             // ホーム
             NavigationView {
-                HomeView(vm: vm)
+                HomeView(baseViewModel: baseViewModel)
             }
             .tabItem {
                 Image(systemName: "house")
@@ -24,7 +23,7 @@ struct MainTabView: View {
             
             // お気に入り
             NavigationView {
-                FavoriteView(vm: vm)
+                FavoriteView(baseViewModel: baseViewModel)
             }
             .tabItem {
                 Image(systemName: "heart")
@@ -32,7 +31,7 @@ struct MainTabView: View {
             }
             
             // 投稿（モーダル）
-            CreatePostWrapperView(vm: vm)
+            CreatePostWrapperView(baseViewModel: baseViewModel)
                 .tabItem {
                     Image(systemName: "plus.app.fill")
                     Text("投稿")
@@ -40,7 +39,7 @@ struct MainTabView: View {
             
             // プロフィール
             NavigationView {
-                ProfileView(vm: vm)
+                ProfileView(baseViewModel: baseViewModel)
             }
             .tabItem {
                 Image(systemName: "square.grid.3x3")

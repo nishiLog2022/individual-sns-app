@@ -8,7 +8,7 @@ import SwiftUI
 import PhotosUI
 
 struct CreatePostView: View {
-    @ObservedObject var vm: PostViewModel
+    @ObservedObject var baseViewModel: AppBaseViewModel
     
     @State private var caption: String = ""
     @State private var selectedItems: [PhotosPickerItem] = []
@@ -105,9 +105,7 @@ extension CreatePostView {
 
 extension CreatePostView {
     func createPost() {
-        vm.addPost(caption: caption)
-        
-        // TODO: ここで画像保存（後で実装）
+        baseViewModel.addPost(caption: caption, images: selectedImages)
         
         caption = ""
         selectedImages = []

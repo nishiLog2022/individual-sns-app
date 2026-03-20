@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct CreatePostWrapperView: View {
-    @ObservedObject var vm: PostViewModel
+    @ObservedObject var baseViewModel: AppBaseViewModel
     @State private var showCreate = false
     
     var body: some View {
@@ -16,7 +16,7 @@ struct CreatePostWrapperView: View {
                 showCreate = true
             }
             .sheet(isPresented: $showCreate) {
-                CreatePostView(vm: vm)
+                CreatePostView(baseViewModel: baseViewModel)
             }
     }
 }
