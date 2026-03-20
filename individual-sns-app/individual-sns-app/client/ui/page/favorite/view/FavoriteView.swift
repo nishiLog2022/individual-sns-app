@@ -20,7 +20,7 @@ struct FavoriteView: View {
                 }
                 .padding(.top)
             }
-            .navigationTitle("お気に入り")
+            .navigationTitle(Pages.favorite.title)
             .navigationBarTitleDisplayMode(.inline)
         }
     }

@@ -29,7 +29,7 @@ struct ProfileView: View {
                     }
                 }
             }
-            .navigationTitle("プロフィール")
+            .navigationTitle(Pages.profile.title)
         }
     }
 }

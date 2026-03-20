@@ -15,44 +15,59 @@ struct AppBaseView: View {
             // ホーム
             NavigationView {
                 HomeView(baseViewModel: baseViewModel)
+                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: "house")
-                Text("ホーム")
+                Image(systemName: Pages.home.image)
+                Text(Pages.home.title)
             }
             
             // お気に入り
             NavigationView {
                 FavoriteView(baseViewModel: baseViewModel)
+                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: "heart")
-                Text("お気に入り")
+                Image(systemName: Pages.favorite.image)
+                Text(Pages.favorite.title)
             }
             
-            // 投稿（モーダル）
-            CreatePostWrapperView(baseViewModel: baseViewModel)
-                .tabItem {
-                    Image(systemName: "plus.app.fill")
-                    Text("投稿")
-                }
+//            // 投稿（モーダル）
+//            CreatePostView(baseViewModel: baseViewModel)
+//                .tabItem {
+//                    Image(systemName: Pages.post.image)
+//                    Text(Pages.post.title)
+//                }
             
             // プロフィール
             NavigationView {
                 ProfileView(baseViewModel: baseViewModel)
+                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: "square.grid.3x3")
-                Text("投稿一覧")
+                Image(systemName: Pages.profile.image)
+                Text(Pages.profile.title)
+            }
+            // 👇 右上ボタン（遷移）
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        CreatePostView(baseViewModel: baseViewModel)
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.title3)
+                    }
+                }
             }
             
             // 設定
             NavigationView {
                 SettingsView()
+                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: "gearshape")
-                Text("設定")
+                Image(systemName: Pages.setting.image)
+                Text(Pages.setting.title)
             }
         }
     }
