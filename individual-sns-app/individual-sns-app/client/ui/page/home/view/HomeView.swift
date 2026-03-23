@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
@@ -21,7 +22,7 @@ struct HomeView: View {
             }
             .padding(.top)
         }
-        .navigationTitle(Pages.home.title)
+        .navigationTitle(Page.home.title)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

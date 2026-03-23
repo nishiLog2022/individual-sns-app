@@ -10,65 +10,47 @@ struct AppBaseView: View {
     @StateObject var baseViewModel: AppBaseViewModel = AppBaseViewModel()
     
     var body: some View {
-        TabView {
+        TabView(selection: $baseViewModel.selectedTab) {
             
             // ホーム
             NavigationView {
                 HomeView(baseViewModel: baseViewModel)
-                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: Pages.home.image)
-                Text(Pages.home.title)
+                Image(systemName: Page.home.image)
+                Text(Page.home.title)
             }
+            .tag(0)
             
             // お気に入り
             NavigationView {
                 FavoriteView(baseViewModel: baseViewModel)
-                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: Pages.favorite.image)
-                Text(Pages.favorite.title)
+                Image(systemName: Page.favorite.image)
+                Text(Page.favorite.title)
             }
-            
-//            // 投稿（モーダル）
-//            CreatePostView(baseViewModel: baseViewModel)
-//                .tabItem {
-//                    Image(systemName: Pages.post.image)
-//                    Text(Pages.post.title)
-//                }
+            .tag(1)
             
             // プロフィール
             NavigationView {
                 ProfileView(baseViewModel: baseViewModel)
-                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: Pages.profile.image)
-                Text(Pages.profile.title)
+                Image(systemName: Page.profile.image)
+                Text(Page.profile.title)
             }
-            // 👇 右上ボタン（遷移）
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink {
-                        CreatePostView(baseViewModel: baseViewModel)
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title3)
-                    }
-                }
-            }
+            .tag(2)
             
             // 設定
             NavigationView {
                 SettingsView()
-                    .border(.red, width: 2)
             }
             .tabItem {
-                Image(systemName: Pages.setting.image)
-                Text(Pages.setting.title)
+                Image(systemName: Page.setting.image)
+                Text(Page.setting.title)
             }
+            .tag(3)
         }
     }
 }

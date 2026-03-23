@@ -12,7 +12,7 @@ import SwiftData
 struct individual_sns_appApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            TrnPost.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +25,7 @@ struct individual_sns_appApp: App {
 
     var body: some Scene {
         WindowGroup {
-            AppBaseView()
+            SplashView()
         }
         .modelContainer(sharedModelContainer)
     }

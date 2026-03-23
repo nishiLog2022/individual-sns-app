@@ -9,7 +9,8 @@ import PhotosUI
 
 struct CreatePostView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
-    
+    @Environment(\.modelContext) var context
+    @Environment(\.dismiss) private var dismiss
     @State private var caption: String = ""
     @State private var selectedItems: [PhotosPickerItem] = []
     @State private var selectedImages: [UIImage] = []
@@ -78,7 +79,14 @@ struct CreatePostView: View {
             }
             .navigationTitle("投稿作成")
             .navigationBarTitleDisplayMode(.inline)
-            .onChange(of: selectedItems) { _ in
+//            .onChange(of: selectedItems) { _ in
+//                loadImages()
+//            }
+            .onChange(of: selectedItems) { newItems in
+                print("選択された数selectedItems:", selectedItems.count)
+                print("選択された数:", newItems.count)
+                dump(newItems)
+//                print("選択された数value:", newItems.value.count)
                 loadImages()
             }
         }
@@ -88,16 +96,21 @@ struct CreatePostView: View {
 extension CreatePostView {
     func loadImages() {
         selectedImages = []
-        
+        print("画像選択された")
+
         for item in selectedItems {
+            print("item:", item)
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
-                    
+                    print("data:", data)
+
                     await MainActor.run {
                         selectedImages.append(uiImage)
                     }
                 }
+                print("画像数:", selectedImages.count)
+                dump(selectedItems)
             }
         }
     }
@@ -105,10 +118,7 @@ extension CreatePostView {
 
 extension CreatePostView {
     func createPost() {
-        baseViewModel.addPost(caption: caption, images: selectedImages)
-        
-        caption = ""
-        selectedImages = []
-        selectedItems = []
+        baseViewModel.addPost(caption: caption, images: selectedImages, context: context)
+        dismiss()
     }
 }

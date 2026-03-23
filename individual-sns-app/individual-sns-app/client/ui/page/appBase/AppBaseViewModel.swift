@@ -6,45 +6,51 @@
 //
 import Foundation
 import SwiftUI
+import SwiftData
 
 class AppBaseViewModel: ObservableObject {
-    @Published var posts: [PostModel] = []
+    private let databaseService: DatabaseServiceProtocol = DiContainer.shared.container.resolve(DatabaseServiceProtocol.self)!
+    private let postUsecase: PostUsecaseProtocol = DiContainer.shared.container.resolve(PostUsecaseProtocol.self)!
+    private let imageStorage: ImageStorageProtocol = DiContainer.shared.container.resolve(ImageStorageProtocol.self)!
+    @Published var posts: [PostDto] = []
+    @Published var selectedTab: Int = 0
     
     init() {
-        loadMock()
+        getDbURL()
+        loadPost()
     }
     
-    func loadMock() {
-        posts = [
-            PostModel(id: UUID(), caption: "今日はいい日だった", imagePaths: [], date: Date(), isFavorite: false),
-            PostModel(id: UUID(), caption: "カフェで作業☕️", imagePaths: [], date: Date(), isFavorite: true)
-        ]
+    func loadPost() {
+        posts = postUsecase.getPostsForList()
     }
     
-    func addPost(caption: String, images: [UIImage]) {
-        
+    // DBのURLの取得
+    func getDbURL() {
+        databaseService.copyUrl()
+    }
+    
+    func addPost(caption: String, images: [UIImage], context: ModelContext) {
         let paths = images.compactMap {
-            ImageStorage.shared.saveImage($0)
+            imageStorage.saveImage($0)
         }
         
-        let newPost = PostModel(
-            id: UUID(),
+        let post = PostDto(
             caption: caption,
-            imagePaths: paths,
-            date: Date(),
-            isFavorite: false
+            imagePaths: paths
         )
         
-        posts.insert(newPost, at: 0)
+        postUsecase.savePostData(dto: post)
+        posts = postUsecase.getPostsForList()
+        selectedTab = 0
     }
     
-    func toggleFavorite(post: PostModel) {
+    func toggleFavorite(post: PostDto) {
         if let index = posts.firstIndex(of: post) {
             posts[index].isFavorite.toggle()
         }
     }
     
-    var favoritePosts: [PostModel] {
+    var favoritePosts: [PostDto] {
         posts.filter { $0.isFavorite }
     }
 }

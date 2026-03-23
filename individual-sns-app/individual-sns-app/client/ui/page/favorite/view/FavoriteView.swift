@@ -12,7 +12,7 @@ struct FavoriteView: View {
         NavigationView {
             ScrollView {
                 LazyVStack(spacing: 20) {
-                    ForEach(baseViewModel.posts) { post in
+                    ForEach(baseViewModel.favoritePosts) { post in
                         PostView(post: post) {
                             baseViewModel.toggleFavorite(post: post)
                         }
@@ -20,7 +20,7 @@ struct FavoriteView: View {
                 }
                 .padding(.top)
             }
-            .navigationTitle(Pages.favorite.title)
+            .navigationTitle(Page.favorite.title)
             .navigationBarTitleDisplayMode(.inline)
         }
     }

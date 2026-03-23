@@ -7,10 +7,10 @@
 
 import UIKit
 
-class ImageStorage {
-    
+class ImageStorage: ImageStorageProtocol {
+
     static let shared = ImageStorage()
-    
+
     private init() {}
     
     // ディレクトリURL

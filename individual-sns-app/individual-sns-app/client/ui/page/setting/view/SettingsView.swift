@@ -13,7 +13,7 @@ struct SettingsView: View {
                 Text("アプリについて")
                 Text("プライバシーポリシー")
             }
-            .navigationTitle(Pages.setting.title)
+            .navigationTitle(Page.setting.title)
         }
     }
 }

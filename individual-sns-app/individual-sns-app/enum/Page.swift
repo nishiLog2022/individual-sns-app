@@ -6,7 +6,7 @@
 //
 import Foundation
 
-enum Pages {
+enum Page {
     case home
     case favorite
     case post

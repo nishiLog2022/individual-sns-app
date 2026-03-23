@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		47B228852F6E25E70019178F /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 47B228842F6E25E70019178F /* Swinject */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		4776E4A02F68CCF5004067C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B228852F6E25E70019178F /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,6 +130,7 @@
 			);
 			name = "individual-sns-app";
 			packageProductDependencies = (
+				47B228842F6E25E70019178F /* Swinject */,
 			);
 			productName = "individual-sns-app";
 			productReference = 4776E48E2F68CCF3004067C7 /* individual-sns-app.app */;
@@ -208,6 +214,9 @@
 			);
 			mainGroup = 4776E4852F68CCF3004067C7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4776E48F2F68CCF3004067C7 /* Products */;
 			projectDirPath = "";
@@ -575,6 +584,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Swinject/Swinject";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.10.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		47B228842F6E25E70019178F /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4776E4862F68CCF3004067C7 /* Project object */;
 }
