@@ -20,17 +20,17 @@ struct ProfileView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ScrollView {
-                VStack(spacing: 0) {
-                    // ─── プロフィールヘッダー（画面高さの約22%）───
-                    ProfileHeaderView(
-                        baseViewModel: baseViewModel,
-                        onEditTap: { showEditProfile = true }
-                    )
-                    .frame(height: geometry.size.height * 0.22)
+            VStack(spacing: 0) {
+                // ─── プロフィールヘッダー（画面高さの約22%）───
+                ProfileHeaderView(
+                    baseViewModel: baseViewModel,
+                    onEditTap: { showEditProfile = true }
+                )
+                .frame(height: geometry.size.height * 0.22)
 
-                    Divider()
+                Divider()
 
+                ScrollView {
                     // ─── 投稿グリッド ───
                     if baseViewModel.posts.isEmpty {
                         VStack(spacing: 12) {
