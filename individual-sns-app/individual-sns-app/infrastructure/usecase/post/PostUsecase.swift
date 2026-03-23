@@ -17,6 +17,16 @@ class PostUsecase: PostUsecaseProtocol {
     func savePostData(dto: PostDto) {
         trnPostRepository.create(dto)
     }
+
+    // 投稿の更新
+    func updatePostData(dto: PostDto) {
+        trnPostRepository.update(dto)
+    }
+
+    // 投稿の削除
+    func deletePostData(dto: PostDto) {
+        trnPostRepository.delete(dto)
+    }
     
     // ポストの取得（ホーム用）
     func getPostsForList() -> [PostDto] {

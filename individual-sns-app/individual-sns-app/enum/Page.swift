@@ -15,31 +15,21 @@ enum Page {
     
     var title: String {
         switch self {
-        case .home:
-            return "ホーム"
-        case .favorite:
-            return "お気に入り"
-        case .post:
-            return "投稿"
-        case .profile:
-            return "プロフィール"
-        case .setting:
-            return "設定"
+        case .home:     return Message.Title.home
+        case .favorite: return Message.Title.favorite
+        case .post:     return Message.Title.post
+        case .profile:  return Message.Title.profile
+        case .setting:  return Message.Title.setting
         }
     }
-    
+
     var image: String {
         switch self {
-        case .home:
-            return "house"
-        case .favorite:
-            return "heart"
-        case .post:
-            return "plus.app.fill"
-        case .profile:
-            return "square.grid.3x3"
-        case .setting:
-            return "gearshape"
+        case .home:     return SystemImage.Tab.home
+        case .favorite: return SystemImage.Tab.favorite
+        case .post:     return SystemImage.Tab.post
+        case .profile:  return SystemImage.Tab.profile
+        case .setting:  return SystemImage.Tab.setting
         }
     }
 }

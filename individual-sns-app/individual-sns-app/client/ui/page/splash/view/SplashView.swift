@@ -11,8 +11,10 @@ struct SplashView: View {
 
     var body: some View {
         ZStack {
-            // AppBaseView を常時表示（NavigationView が最初から存在する）
+            // AppBaseView を常時レンダリング（NavigationView が最初から存在する）
+            // スプラッシュ表示中は不透明度を 0 にして画面をチラつかせない
             AppBaseView()
+                .opacity(isVisible ? 0 : 1)
 
             // スプラッシュをオーバーレイ
             if isVisible {
@@ -33,12 +35,12 @@ struct SplashView: View {
                                 )
                                 .frame(width: 100, height: 100)
 
-                            Image(systemName: "camera.fill")
+                            Image(systemName: SystemImage.Splash.appIcon)
                                 .font(.system(size: 44))
                                 .foregroundColor(.white)
                         }
 
-                        Text("My Diary")
+                        Text(Message.Splash.appName)
                             .font(.largeTitle)
                             .fontWeight(.bold)
                     }

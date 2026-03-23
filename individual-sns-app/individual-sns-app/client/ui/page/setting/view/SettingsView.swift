@@ -10,8 +10,8 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                Text("アプリについて")
-                Text("プライバシーポリシー")
+                Text(Message.Setting.about)
+                Text(Message.Setting.privacyPolicy)
             }
             .navigationTitle(Page.setting.title)
         }

@@ -41,7 +41,7 @@ struct CreatePostView: View {
                                     .fill(Color.gray.opacity(0.2))
                                     .frame(width: 100, height: 100)
                                 
-                                Image(systemName: "plus")
+                                Image(systemName: SystemImage.Post.addImage)
                                     .font(.title)
                             }
                         }
@@ -51,7 +51,7 @@ struct CreatePostView: View {
                 
                 // ② キャプション入力
                 VStack(alignment: .leading) {
-                    Text("キャプション")
+                    Text(Message.Post.captionLabel)
                         .font(.headline)
                     
                     TextEditor(text: $caption)
@@ -66,7 +66,7 @@ struct CreatePostView: View {
                 
                 // ③ 投稿ボタン
                 Button(action: createPost) {
-                    Text("投稿する")
+                    Text(Message.Button.submit)
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -77,7 +77,7 @@ struct CreatePostView: View {
                 .disabled(caption.isEmpty)
                 .padding()
             }
-            .navigationTitle("投稿作成")
+            .navigationTitle(Message.Title.createPost)
             .navigationBarTitleDisplayMode(.inline)
 //            .onChange(of: selectedItems) { _ in
 //                loadImages()
