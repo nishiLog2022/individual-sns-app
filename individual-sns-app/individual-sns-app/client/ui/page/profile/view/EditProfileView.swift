@@ -7,16 +7,12 @@ import PhotosUI
 
 struct EditProfileView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
+    @StateObject private var viewModel: EditProfileViewModel
     @Environment(\.dismiss) private var dismiss
-
-    @State private var name: String
-    @State private var selectedItem: PhotosPickerItem? = nil
-    @State private var previewImage: UIImage? = nil
 
     init(baseViewModel: AppBaseViewModel) {
         self.baseViewModel = baseViewModel
-        _name = State(initialValue: baseViewModel.profileName)
-        _previewImage = State(initialValue: baseViewModel.profileImage)
+        _viewModel = StateObject(wrappedValue: EditProfileViewModel(baseViewModel: baseViewModel))
     }
 
     var body: some View {
@@ -25,7 +21,7 @@ struct EditProfileView: View {
 
                 // プロフィール写真
                 VStack(spacing: 12) {
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
+                    PhotosPicker(selection: $viewModel.state.selectedItem, matching: .images) {
                         ZStack(alignment: .bottomTrailing) {
                             profileImageView
                                 .frame(width: 100, height: 100)
@@ -43,12 +39,12 @@ struct EditProfileView: View {
                                 .offset(x: 4, y: 4)
                         }
                     }
-                    .onChange(of: selectedItem) { newItem in
+                    .onChange(of: viewModel.state.selectedItem) { newItem in
                         Task {
                             if let data = try? await newItem?.loadTransferable(type: Data.self),
                                let uiImage = UIImage(data: data) {
                                 await MainActor.run {
-                                    previewImage = uiImage
+                                    viewModel.state.previewImage = uiImage
                                 }
                             }
                         }
@@ -64,7 +60,7 @@ struct EditProfileView: View {
                     Text(Message.Profile.nameLabel)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    TextField(Message.Profile.namePlaceholder, text: $name)
+                    TextField(Message.Profile.namePlaceholder, text: $viewModel.state.name)
                         .textFieldStyle(.roundedBorder)
                         .font(.body)
                 }
@@ -81,11 +77,11 @@ struct EditProfileView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(Message.Button.save) {
-                        baseViewModel.updateProfile(name: name, image: previewImage !== baseViewModel.profileImage ? previewImage : nil)
+                        baseViewModel.updateProfile(name: viewModel.state.name, image: viewModel.state.previewImage !== baseViewModel.profileImage ? viewModel.state.previewImage : nil)
                         dismiss()
                     }
                     .fontWeight(.semibold)
-                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled(viewModel.state.name.trimmingCharacters(in: .whitespaces).isEmpty)
                 }
             }
         }
@@ -93,7 +89,7 @@ struct EditProfileView: View {
 
     @ViewBuilder
     private var profileImageView: some View {
-        if let image = previewImage {
+        if let image = viewModel.state.previewImage {
             Image(uiImage: image)
                 .resizable()
                 .scaledToFill()

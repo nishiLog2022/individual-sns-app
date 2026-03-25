@@ -10,17 +10,12 @@ struct EditPostView: View {
     let post: PostDto
 
     @Environment(\.dismiss) private var dismiss
-    @State private var caption: String
-    @State private var selectedItems: [PhotosPickerItem] = []
-    @State private var selectedImages: [UIImage] = []
-    @State private var existingImagePaths: [String]
-    @State private var showDeleteConfirm = false
+    @StateObject private var viewModel: EditPostViewModel
 
     init(baseViewModel: AppBaseViewModel, post: PostDto) {
         self.baseViewModel = baseViewModel
         self.post = post
-        _caption = State(initialValue: post.caption)
-        _existingImagePaths = State(initialValue: post.imagePaths)
+        _viewModel = StateObject(wrappedValue: EditPostViewModel(post: post))
     }
 
     var body: some View {
@@ -34,7 +29,7 @@ struct EditPostView: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
                                 // 既存の画像
-                                ForEach(existingImagePaths, id: \.self) { path in
+                                ForEach(viewModel.state.existingImagePaths, id: \.self) { path in
                                     if let uiImage = ImageStorage.shared.loadImage(fileName: path) {
                                         ZStack(alignment: .topTrailing) {
                                             Image(uiImage: uiImage)
@@ -46,7 +41,7 @@ struct EditPostView: View {
 
                                             // 削除ボタン
                                             Button {
-                                                existingImagePaths.removeAll { $0 == path }
+                                                viewModel.state.existingImagePaths.removeAll { $0 == path }
                                             } label: {
                                                 Image(systemName: SystemImage.Post.close)
                                                     .foregroundColor(.white)
@@ -58,7 +53,7 @@ struct EditPostView: View {
                                     }
                                 }
                                 // 新たに選んだ画像
-                                ForEach(selectedImages, id: \.self) { image in
+                                ForEach(viewModel.state.selectedImages, id: \.self) { image in
                                     Image(uiImage: image)
                                         .resizable()
                                         .scaledToFill()
@@ -68,7 +63,7 @@ struct EditPostView: View {
                                 }
                                 // 追加ボタン
                                 PhotosPicker(
-                                    selection: $selectedItems,
+                                    selection: $viewModel.state.selectedItems,
                                     maxSelectionCount: 5,
                                     matching: .images
                                 ) {
@@ -89,7 +84,7 @@ struct EditPostView: View {
                             Text(Message.Post.captionLabel)
                                 .font(.headline)
                                 .padding(.horizontal)
-                            TextEditor(text: $caption)
+                            TextEditor(text: $viewModel.state.caption)
                                 .frame(height: 150)
                                 .padding(8)
                                 .background(Color.gray.opacity(0.1))
@@ -106,11 +101,11 @@ struct EditPostView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(caption.isEmpty ? Color.gray : Color.blue)
+                        .background(viewModel.state.caption.isEmpty ? Color.gray : Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(12)
                 }
-                .disabled(caption.isEmpty)
+                .disabled(viewModel.state.caption.isEmpty)
                 .padding()
             }
             .navigationTitle(Message.Title.editPost)
@@ -119,7 +114,7 @@ struct EditPostView: View {
                 // ゴミ箱アイコンで投稿削除
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        showDeleteConfirm = true
+                        viewModel.state.showDeleteConfirm = true
                     } label: {
                         Image(systemName: SystemImage.Post.delete)
                             .foregroundColor(.red)
@@ -131,39 +126,38 @@ struct EditPostView: View {
                     }
                 }
             }
-            .confirmationDialog(Message.Post.deleteConfirm, isPresented: $showDeleteConfirm, titleVisibility: .visible) {
+            .confirmationDialog(Message.Post.deleteConfirm, isPresented: $viewModel.state.showDeleteConfirm, titleVisibility: .visible) {
                 Button(Message.Button.delete, role: .destructive) {
                     baseViewModel.deletePost(dto: post)
                     dismiss()
                 }
                 Button(Message.Button.cancel, role: .cancel) {}
             }
-            .onChange(of: selectedItems) { newItems in
+            .onChange(of: viewModel.state.selectedItems) { newItems in
                 loadNewImages(from: newItems)
             }
         }
     }
 
     private func saveEdit() {
-        // 新しく追加された画像を保存
-        let newPaths = selectedImages.compactMap {
+        let newPaths = viewModel.state.selectedImages.compactMap {
             ImageStorage.shared.saveImage($0)
         }
         var updated = post
-        updated.caption = caption
-        updated.imagePaths = existingImagePaths + newPaths
+        updated.caption = viewModel.state.caption
+        updated.imagePaths = viewModel.state.existingImagePaths + newPaths
         baseViewModel.updatePost(dto: updated)
         dismiss()
     }
 
     private func loadNewImages(from items: [PhotosPickerItem]) {
-        selectedImages = []
+        viewModel.state.selectedImages = []
         for item in items {
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
                     await MainActor.run {
-                        selectedImages.append(uiImage)
+                        viewModel.state.selectedImages.append(uiImage)
                     }
                 }
             }

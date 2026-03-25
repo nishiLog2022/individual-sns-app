@@ -11,8 +11,7 @@ struct PostView: View {
     var baseViewModel: AppBaseViewModel
     var onLike: () -> Void
     var imageStorage: ImageStorageProtocol = ImageStorage.shared
-    @State private var currentIndex: Int? = 0
-    @State private var showEdit = false
+    @StateObject private var viewModel = PostViewModel()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -74,7 +73,7 @@ struct PostView: View {
                     }
                     .scrollTargetLayout()
                     .scrollTargetBehavior(.paging)
-                    .scrollPosition(id: $currentIndex)
+                    .scrollPosition(id: $viewModel.state.currentIndex)
                 }
                 .frame(height: 300)
 
@@ -82,7 +81,7 @@ struct PostView: View {
                 HStack(spacing: 6) {
                     ForEach(0..<post.imagePaths.count, id: \.self) { index in
                         Circle()
-                            .fill(index == (currentIndex ?? 0)
+                            .fill(index == (viewModel.state.currentIndex ?? 0)
                                   ? Color.primary
                                   : Color.primary.opacity(0.3))
                             .frame(width: 7, height: 7)
@@ -105,7 +104,7 @@ struct PostView: View {
 
                 // 編集ボタン
                 Button {
-                    showEdit = true
+                    viewModel.state.showEdit = true
                 } label: {
                     Image(systemName: SystemImage.Post.edit)
                         .font(.title2)
@@ -125,7 +124,7 @@ struct PostView: View {
             }
             .padding(.horizontal)
         }
-        .sheet(isPresented: $showEdit) {
+        .sheet(isPresented: $viewModel.state.showEdit) {
             EditPostView(baseViewModel: baseViewModel, post: post)
         }
     }

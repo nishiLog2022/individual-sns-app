@@ -9,11 +9,9 @@ import PhotosUI
 
 struct CreatePostView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
+    @StateObject private var viewModel = CreatePostViewModel()
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
-    @State private var caption: String = ""
-    @State private var selectedItems: [PhotosPickerItem] = []
-    @State private var selectedImages: [UIImage] = []
     
     var body: some View {
         NavigationView {
@@ -22,7 +20,7 @@ struct CreatePostView: View {
                 // ① 画像選択エリア
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(selectedImages, id: \.self) { image in
+                        ForEach(viewModel.state.selectedImages, id: \.self) { image in
                             Image(uiImage: image)
                                 .resizable()
                                 .scaledToFill()
@@ -32,7 +30,7 @@ struct CreatePostView: View {
                         }
                         
                         PhotosPicker(
-                            selection: $selectedItems,
+                            selection: $viewModel.state.selectedItems,
                             maxSelectionCount: 5,
                             matching: .images
                         ) {
@@ -54,7 +52,7 @@ struct CreatePostView: View {
                     Text(Message.Post.captionLabel)
                         .font(.headline)
                     
-                    TextEditor(text: $caption)
+                    TextEditor(text: $viewModel.state.caption)
                         .frame(height: 150)
                         .padding(8)
                         .background(Color.gray.opacity(0.1))
@@ -70,11 +68,11 @@ struct CreatePostView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(caption.isEmpty ? Color.gray : Color.blue)
+                        .background(viewModel.state.caption.isEmpty ? Color.gray : Color.blue)
                         .foregroundColor(.white)
                         .cornerRadius(12)
                 }
-                .disabled(caption.isEmpty)
+                .disabled(viewModel.state.caption.isEmpty)
                 .padding()
             }
             .navigationTitle(Message.Title.createPost)
@@ -82,11 +80,7 @@ struct CreatePostView: View {
 //            .onChange(of: selectedItems) { _ in
 //                loadImages()
 //            }
-            .onChange(of: selectedItems) { newItems in
-                print("選択された数selectedItems:", selectedItems.count)
-                print("選択された数:", newItems.count)
-                dump(newItems)
-//                print("選択された数value:", newItems.value.count)
+            .onChange(of: viewModel.state.selectedItems) { newItems in
                 loadImages()
             }
         }
@@ -95,22 +89,15 @@ struct CreatePostView: View {
 
 extension CreatePostView {
     func loadImages() {
-        selectedImages = []
-        print("画像選択された")
-
-        for item in selectedItems {
-            print("item:", item)
+        viewModel.state.selectedImages = []
+        for item in viewModel.state.selectedItems {
             Task {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
-                    print("data:", data)
-
                     await MainActor.run {
-                        selectedImages.append(uiImage)
+                        viewModel.state.selectedImages.append(uiImage)
                     }
                 }
-                print("画像数:", selectedImages.count)
-                dump(selectedItems)
             }
         }
     }
@@ -118,7 +105,7 @@ extension CreatePostView {
 
 extension CreatePostView {
     func createPost() {
-        baseViewModel.addPost(caption: caption, images: selectedImages, context: context)
+        baseViewModel.addPost(caption: viewModel.state.caption, images: viewModel.state.selectedImages, context: context)
         dismiss()
     }
 }

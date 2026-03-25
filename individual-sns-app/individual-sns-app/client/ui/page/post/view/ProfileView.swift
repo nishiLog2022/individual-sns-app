@@ -8,9 +8,7 @@ import SwiftUI
 
 struct ProfileView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
-
-    @State private var showEditProfile = false
-    @State private var selectedPost: PostDto? = nil
+    @StateObject private var viewModel = ProfileViewModel()
 
     private let columns = [
         GridItem(.flexible(), spacing: 2),
@@ -24,7 +22,7 @@ struct ProfileView: View {
                 // ─── プロフィールヘッダー（画面高さの約22%）───
                 ProfileHeaderView(
                     baseViewModel: baseViewModel,
-                    onEditTap: { showEditProfile = true }
+                    onEditTap: { viewModel.state.showEditProfile = true }
                 )
                 .frame(height: geometry.size.height * 0.22)
 
@@ -48,7 +46,7 @@ struct ProfileView: View {
                             ForEach(baseViewModel.posts) { post in
                                 PostThumbnailView(post: post)
                                     .onTapGesture {
-                                        selectedPost = post
+                                        viewModel.state.selectedPost = post
                                     }
                             }
                         }
@@ -59,11 +57,11 @@ struct ProfileView: View {
         .navigationTitle(Page.profile.title)
         .navigationBarTitleDisplayMode(.inline)
         // プロフィール編集シート
-        .sheet(isPresented: $showEditProfile) {
+        .sheet(isPresented: $viewModel.state.showEditProfile) {
             EditProfileView(baseViewModel: baseViewModel)
         }
         // タップした投稿を起点にしたタイムラインシート
-        .sheet(item: $selectedPost) { tappedPost in
+        .sheet(item: $viewModel.state.selectedPost) { tappedPost in
             PostTimelineView(
                 baseViewModel: baseViewModel,
                 startPost: tappedPost
