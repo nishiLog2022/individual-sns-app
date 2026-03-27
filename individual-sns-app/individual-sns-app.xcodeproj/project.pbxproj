@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		47555F842F77491B0021BFE5 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 47555F832F77491B0021BFE5 /* FirebaseCrashlytics */; };
+		47555F862F77491B0021BFE5 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = 47555F852F77491B0021BFE5 /* FirebaseDatabase */; };
+		475560882F7749F30021BFE5 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 475560872F7749F30021BFE5 /* FirebaseAnalytics */; };
 		47B228852F6E25E70019178F /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 47B228842F6E25E70019178F /* Swinject */; };
 /* End PBXBuildFile section */
 
@@ -69,7 +72,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47555F862F77491B0021BFE5 /* FirebaseDatabase in Frameworks */,
 				47B228852F6E25E70019178F /* Swinject in Frameworks */,
+				475560882F7749F30021BFE5 /* FirebaseAnalytics in Frameworks */,
+				47555F842F77491B0021BFE5 /* FirebaseCrashlytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,12 +96,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		475560862F7749F30021BFE5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4776E4852F68CCF3004067C7 = {
 			isa = PBXGroup;
 			children = (
 				4776E4902F68CCF3004067C7 /* individual-sns-app */,
 				4776E4A22F68CCF5004067C7 /* individual-sns-appTests */,
 				4776E4AC2F68CCF5004067C7 /* individual-sns-appUITests */,
+				475560862F7749F30021BFE5 /* Frameworks */,
 				4776E48F2F68CCF3004067C7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +145,9 @@
 			name = "individual-sns-app";
 			packageProductDependencies = (
 				47B228842F6E25E70019178F /* Swinject */,
+				47555F832F77491B0021BFE5 /* FirebaseCrashlytics */,
+				47555F852F77491B0021BFE5 /* FirebaseDatabase */,
+				475560872F7749F30021BFE5 /* FirebaseAnalytics */,
 			);
 			productName = "individual-sns-app";
 			productReference = 4776E48E2F68CCF3004067C7 /* individual-sns-app.app */;
@@ -216,6 +233,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */,
+				47555F7C2F77491B0021BFE5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4776E48F2F68CCF3004067C7 /* Products */;
@@ -588,6 +606,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		47555F7C2F77491B0021BFE5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.11.0;
+			};
+		};
 		47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Swinject/Swinject";
@@ -599,6 +625,21 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		47555F832F77491B0021BFE5 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47555F7C2F77491B0021BFE5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		47555F852F77491B0021BFE5 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47555F7C2F77491B0021BFE5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		475560872F7749F30021BFE5 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 47555F7C2F77491B0021BFE5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
 		47B228842F6E25E70019178F /* Swinject */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 47B228832F6E25E70019178F /* XCRemoteSwiftPackageReference "Swinject" */;
