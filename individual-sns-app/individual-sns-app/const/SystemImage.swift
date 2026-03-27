@@ -50,6 +50,6 @@ enum SystemImage {
 
     // MARK: - スプラッシュ
     enum Splash {
-        static let appIcon = "camera.fill"
+        static let appIcon = "AppIcon"
     }
 }

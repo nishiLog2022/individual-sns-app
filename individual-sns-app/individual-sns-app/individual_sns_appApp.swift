@@ -10,23 +10,13 @@ import SwiftData
 
 @main
 struct individual_sns_appApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            TrnPost.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
+    // ModelContainer は DiContainer で一元管理する
+    private let modelContainer: ModelContainer = DiContainer.shared.container.resolve(ModelContainer.self)!
 
     var body: some Scene {
         WindowGroup {
-            SplashView()
+            AppBaseView()
         }
-        .modelContainer(sharedModelContainer)
+        .modelContainer(modelContainer)
     }
 }

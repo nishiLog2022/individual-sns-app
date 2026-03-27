@@ -42,7 +42,7 @@ enum Message {
 
     // MARK: - スプラッシュ
     enum Splash {
-        static let appName = "My Diary"
+        static let appName = "Posly"
     }
 
     // MARK: - プロフィール
