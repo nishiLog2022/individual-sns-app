@@ -1,25 +1,23 @@
 //
-//  HomeView.swift
+//  FavoriteView.swift
 //  individual-sns-app
 //
 //  Created by taichi nishimura on R 8/03/17.
 //
-
 import SwiftUI
-import SwiftData
 
-struct HomeView: View {
+struct FavoriteView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
-    
+
     var body: some View {
         Group {
-            if baseViewModel.posts.isEmpty {
+            if baseViewModel.favoritePosts.isEmpty {
                 // 空状態
                 VStack(spacing: 12) {
-                    Image(systemName: SystemImage.Empty.noPosts)
+                    Image(systemName: SystemImage.Empty.noFavorites)
                         .font(.system(size: 48))
                         .foregroundColor(.gray.opacity(0.5))
-                    Text(Message.Empty.noPosts)
+                    Text(Message.Empty.noFavorites)
                         .font(.subheadline)
                         .foregroundColor(.gray)
                 }
@@ -27,7 +25,7 @@ struct HomeView: View {
             } else {
                 ScrollView {
                     LazyVStack(spacing: 20) {
-                        ForEach(baseViewModel.posts) { post in
+                        ForEach(baseViewModel.favoritePosts) { post in
                             PostView(post: post, baseViewModel: baseViewModel) {
                                 baseViewModel.toggleFavorite(post: post)
                             }
@@ -37,17 +35,7 @@ struct HomeView: View {
                 }
             }
         }
-        .navigationTitle(Page.home.title)
+        .navigationTitle(Page.favorite.title)
         .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                NavigationLink {
-                    CreatePostView(baseViewModel: baseViewModel)
-                } label: {
-                    Image(systemName: SystemImage.Toolbar.addPost)
-                        .font(.title3)
-                }
-            }
-        }
     }
 }
