@@ -11,6 +11,7 @@ struct EditPostView: View {
 
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: EditPostViewModel
+    @FocusState private var isCaptionFocused: Bool
 
     init(baseViewModel: AppBaseViewModel, post: PostDto) {
         self.baseViewModel = baseViewModel
@@ -61,18 +62,21 @@ struct EditPostView: View {
                                         .clipped()
                                         .cornerRadius(8)
                                 }
-                                // 追加ボタン
-                                PhotosPicker(
-                                    selection: $viewModel.state.selectedItems,
-                                    maxSelectionCount: 5,
-                                    matching: .images
-                                ) {
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(Color.gray.opacity(0.2))
-                                            .frame(width: 100, height: 100)
-                                        Image(systemName: SystemImage.Post.addImage)
-                                            .font(.title)
+                                // 既存＋新規の合計が5枚未満のときのみ追加ボタンを表示
+                                let totalImageCount = viewModel.state.existingImagePaths.count + viewModel.state.selectedImages.count
+                                if totalImageCount < 5 {
+                                    PhotosPicker(
+                                        selection: $viewModel.state.selectedItems,
+                                        maxSelectionCount: 5,
+                                        matching: .images
+                                    ) {
+                                        ZStack {
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.gray.opacity(0.2))
+                                                .frame(width: 100, height: 100)
+                                            Image(systemName: SystemImage.Post.addImage)
+                                                .font(.title)
+                                        }
                                     }
                                 }
                             }
@@ -90,6 +94,21 @@ struct EditPostView: View {
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(10)
                                 .padding(.horizontal)
+                                .focused($isCaptionFocused)
+                                .onChange(of: viewModel.state.caption) { newValue in
+                                    if newValue.count > Const.maxCaptionLength {
+                                        viewModel.state.caption = String(newValue.prefix(Const.maxCaptionLength))
+                                    }
+                                }
+
+                            // 文字数カウンター
+                            HStack {
+                                Spacer()
+                                Text("\(viewModel.state.caption.count) / \(Const.maxCaptionLength)")
+                                    .font(.caption)
+                                    .foregroundColor(viewModel.state.caption.count >= Const.maxCaptionLength ? .red : .secondary)
+                            }
+                            .padding(.horizontal)
                         }
                     }
                     .padding(.top)
@@ -110,6 +129,9 @@ struct EditPostView: View {
             }
             .navigationTitle(Message.Title.editPost)
             .navigationBarTitleDisplayMode(.inline)
+            .onTapGesture {
+                isCaptionFocused = false
+            }
             .toolbar {
                 // ゴミ箱アイコンで投稿削除
                 ToolbarItem(placement: .navigationBarTrailing) {
