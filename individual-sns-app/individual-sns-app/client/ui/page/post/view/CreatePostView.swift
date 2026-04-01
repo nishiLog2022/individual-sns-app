@@ -12,7 +12,8 @@ struct CreatePostView: View {
     @StateObject private var viewModel = CreatePostViewModel()
     @Environment(\.modelContext) var context
     @Environment(\.dismiss) private var dismiss
-    
+    @FocusState private var isCaptionFocused: Bool
+
     var body: some View {
         NavigationView {
             VStack {
@@ -28,19 +29,22 @@ struct CreatePostView: View {
                                 .clipped()
                                 .cornerRadius(8)
                         }
-                        
-                        PhotosPicker(
-                            selection: $viewModel.state.selectedItems,
-                            maxSelectionCount: 5,
-                            matching: .images
-                        ) {
-                            ZStack {
-                                Rectangle()
-                                    .fill(Color.gray.opacity(0.2))
-                                    .frame(width: 100, height: 100)
-                                
-                                Image(systemName: SystemImage.Post.addImage)
-                                    .font(.title)
+
+                        // 5枚未満のときのみ追加ボタンを表示
+                        if viewModel.state.selectedImages.count < 5 {
+                            PhotosPicker(
+                                selection: $viewModel.state.selectedItems,
+                                maxSelectionCount: 5,
+                                matching: .images
+                            ) {
+                                ZStack {
+                                    Rectangle()
+                                        .fill(Color.gray.opacity(0.2))
+                                        .frame(width: 100, height: 100)
+                                    
+                                    Image(systemName: SystemImage.Post.addImage)
+                                        .font(.title)
+                                }
                             }
                         }
                     }
@@ -57,6 +61,20 @@ struct CreatePostView: View {
                         .padding(8)
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(10)
+                        .focused($isCaptionFocused)
+                        .onChange(of: viewModel.state.caption) { newValue in
+                            if newValue.count > Const.maxCaptionLength {
+                                viewModel.state.caption = String(newValue.prefix(Const.maxCaptionLength))
+                            }
+                        }
+
+                    // 文字数カウンター
+                    HStack {
+                        Spacer()
+                        Text("\(viewModel.state.caption.count) / \(Const.maxCaptionLength)")
+                            .font(.caption)
+                            .foregroundColor(viewModel.state.caption.count >= Const.maxCaptionLength ? .red : .secondary)
+                    }
                 }
                 .padding()
                 
@@ -77,9 +95,9 @@ struct CreatePostView: View {
             }
             .navigationTitle(Message.Title.createPost)
             .navigationBarTitleDisplayMode(.inline)
-//            .onChange(of: selectedItems) { _ in
-//                loadImages()
-//            }
+            .onTapGesture {
+                isCaptionFocused = false
+            }
             .onChange(of: viewModel.state.selectedItems) { newItems in
                 loadImages()
             }

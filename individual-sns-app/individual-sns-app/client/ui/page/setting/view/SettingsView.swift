@@ -7,11 +7,8 @@
 import SwiftUI
 
 struct SettingsView: View {
-    private var appVersion: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
-        let build   = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "-"
-        return "Version \(version) (\(build))"
-    }
+    @StateObject private var viewModel: SettingsViewModel = SettingsViewModel()
+
 
     var body: some View {
         List {
@@ -21,7 +18,7 @@ struct SettingsView: View {
         .navigationTitle(Page.setting.title)
         .navigationBarTitleDisplayMode(.inline)
         .safeAreaInset(edge: .bottom) {
-            Text(appVersion)
+            Text(viewModel.dispCurrentVersion)
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity)
