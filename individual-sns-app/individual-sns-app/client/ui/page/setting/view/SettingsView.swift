@@ -14,11 +14,8 @@ struct SettingsView: View {
     }
 
     var body: some View {
-        Button("Crash") {
-          fatalError("Crash was triggered")
-        }
         List {
-            Text(Message.Setting.about)
+//            Text(Message.Setting.about)
             Text(Message.Setting.privacyPolicy)
         }
         .navigationTitle(Page.setting.title)
