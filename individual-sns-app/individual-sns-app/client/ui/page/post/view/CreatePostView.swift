@@ -22,8 +22,8 @@ struct CreatePostView: View {
                 // ① 画像選択エリア
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(viewModel.state.selectedImages, id: \.self) { image in
-                            Image(uiImage: image)
+                        ForEach(viewModel.state.selectedImages) { selected in
+                            Image(uiImage: selected.image)
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 100, height: 100)
@@ -68,9 +68,8 @@ struct CreatePostView: View {
                         .cornerRadius(10)
                         .focused($isCaptionFocused)
                         .onChange(of: viewModel.state.caption) { newValue in
-                            if newValue.count > Const.maxCaptionLength {
-                                viewModel.state.caption = String(newValue.prefix(Const.maxCaptionLength))
-                            }
+                            guard newValue.count > Const.maxCaptionLength else { return }
+                            viewModel.state.caption = String(newValue.prefix(Const.maxCaptionLength))
                         }
 
                     // 文字数カウンター
@@ -135,15 +134,18 @@ extension CreatePostView {
 
 extension CreatePostView {
     func loadImages() {
-        viewModel.state.selectedImages = []
-        for item in viewModel.state.selectedItems {
-            Task {
+        let items = viewModel.state.selectedItems
+        Task {
+            // バックグラウンドで全画像をデコードしてから一括反映
+            var loaded: [SelectedImage] = []
+            for item in items {
                 if let data = try? await item.loadTransferable(type: Data.self),
                    let uiImage = UIImage(data: data) {
-                    await MainActor.run {
-                        viewModel.state.selectedImages.append(uiImage)
-                    }
+                    loaded.append(SelectedImage(image: uiImage))
                 }
+            }
+            await MainActor.run {
+                viewModel.state.selectedImages = loaded
             }
         }
     }
@@ -151,7 +153,8 @@ extension CreatePostView {
 
 extension CreatePostView {
     func createPost() {
-        baseViewModel.addPost(caption: viewModel.state.caption, images: viewModel.state.selectedImages, context: context)
+        let images = viewModel.state.selectedImages.map { $0.image }
+        baseViewModel.addPost(caption: viewModel.state.caption, images: images, context: context)
         dismiss()
     }
 }
