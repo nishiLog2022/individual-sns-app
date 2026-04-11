@@ -12,8 +12,8 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-//            Text(Message.Setting.about)
-            Text(Message.Setting.privacyPolicy)
+            Link(destination: URL(string: Const.privacyPolicyUrl)!, label: { Text(Message.Setting.privacyPolicy) })
+            Link(destination: URL(string: Const.termsUrl)!, label: { Text(Message.Setting.terms) })
         }
         .navigationTitle(Page.setting.title)
         .navigationBarTitleDisplayMode(.inline)
