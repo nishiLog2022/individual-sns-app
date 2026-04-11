@@ -58,5 +58,6 @@ enum Message {
     enum Setting {
         static let about           = "アプリについて"
         static let privacyPolicy   = "プライバシーポリシー"
+        static let terms = "利用規約"
     }
 }
