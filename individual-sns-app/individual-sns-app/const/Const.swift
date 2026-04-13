@@ -11,6 +11,12 @@ class Const {
     static let getDataLimitForList: Int = 10
     // プロフィール画面で取得するデータ数
     static let getDataLimitForProfile: Int = 10
+    // 投稿キャプションの最大文字数
+    static let maxCaptionLength: Int = 1500
+    // 利用規約のURL
+    static let termsUrl: String = "https://toridoriblog.com/running-support-app-terms-of-service/"
+    // プライバシーポリシーのURL
+    static let privacyPolicyUrl: String = "https://toridoriblog.com/running-support-app-privacy-policy/"
 }
 extension DateFormatter {
     /// yyyy/MM/dd 形式のフォーマッター
