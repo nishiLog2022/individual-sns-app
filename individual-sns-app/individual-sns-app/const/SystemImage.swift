@@ -13,7 +13,7 @@ enum SystemImage {
         static let favorite = "heart"
         static let post     = "plus.app.fill"
         static let profile  = "square.grid.3x3"
-        static let setting  = "gearshape"
+        static let setting  = "ellipsis.circle"
     }
 
     // MARK: - 投稿アクション
