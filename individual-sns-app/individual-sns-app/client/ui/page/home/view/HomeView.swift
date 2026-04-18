@@ -43,9 +43,22 @@ struct HomeView: View {
                 .background(Color(.systemGroupedBackground))
             }
         }
-        .navigationTitle(Page.home.title)
+        .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithDefaultBackground()
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            UINavigationBar.appearance().compactAppearance = appearance
+        }
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                Image("HeaderLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
                     CreatePostView(baseViewModel: baseViewModel)

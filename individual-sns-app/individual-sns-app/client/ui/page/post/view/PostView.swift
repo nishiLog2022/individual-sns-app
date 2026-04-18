@@ -20,24 +20,16 @@ struct PostView: View {
             HStack(spacing: 8) {
                 Rectangle()
                     .fill(Color.accentColor)
-                    .frame(width: 4, height: 18)
+                    .frame(width: 4, height: 20)
                     .cornerRadius(2)
 
                 Text(DateFormatter.postDate.string(from: post.date))
-                    .font(.subheadline)
+                    .font(.title3)
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
 
                 Spacer()
 
-                // 編集ボタン
-                Button {
-                    viewModel.state.showEdit = true
-                } label: {
-                    Image(systemName: SystemImage.Post.edit)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -128,8 +120,18 @@ struct PostView: View {
                 Button(action: onLike) {
                     HStack(spacing: 4) {
                         Image(systemName: post.isFavorite ? SystemImage.Post.liked : SystemImage.Post.like)
+                            .font(.title)
                             .foregroundColor(post.isFavorite ? .red : .secondary)
                     }
+                }
+                
+                // 編集ボタン
+                Button {
+                    viewModel.state.showEdit = true
+                } label: {
+                    Image(systemName: SystemImage.Post.edit)
+                        .font(.title)
+                        .foregroundColor(.secondary)
                 }
             }
             .padding(.horizontal, 16)
