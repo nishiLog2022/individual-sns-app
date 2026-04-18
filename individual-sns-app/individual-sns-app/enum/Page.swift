@@ -19,7 +19,7 @@ enum Page {
         case .favorite: return Message.Title.favorite
         case .post:     return Message.Title.post
         case .profile:  return Message.Title.profile
-        case .setting:  return Message.Title.setting
+        case .setting:  return Message.Title.other
         }
     }
 
