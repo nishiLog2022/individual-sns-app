@@ -44,10 +44,15 @@ struct ProfileView: View {
                     } else {
                         LazyVGrid(columns: columns, spacing: 2) {
                             ForEach(baseViewModel.posts) { post in
-                                PostThumbnailView(post: post)
-                                    .onTapGesture {
-                                        viewModel.state.selectedPost = post
-                                    }
+                                NavigationLink {
+                                    PostTimelineView(
+                                        baseViewModel: baseViewModel,
+                                        startPost: post
+                                    )
+                                } label: {
+                                    PostThumbnailView(post: post)
+                                }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
@@ -60,13 +65,7 @@ struct ProfileView: View {
         .sheet(isPresented: $viewModel.state.showEditProfile) {
             EditProfileView(baseViewModel: baseViewModel)
         }
-        // タップした投稿を起点にしたタイムラインシート
-        .sheet(item: $viewModel.state.selectedPost) { tappedPost in
-            PostTimelineView(
-                baseViewModel: baseViewModel,
-                startPost: tappedPost
-            )
-        }
+
     }
 }
 
@@ -124,34 +123,26 @@ private struct ProfileHeaderView: View {
 private struct PostTimelineView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
     let startPost: PostDto
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationView {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    LazyVStack(spacing: 20) {
-                        ForEach(baseViewModel.posts) { post in
-                            PostView(post: post, baseViewModel: baseViewModel) {
-                                baseViewModel.toggleFavorite(post: post)
-                            }
-                            .id(post.id)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 20) {
+                    ForEach(baseViewModel.posts) { post in
+                        PostView(post: post, baseViewModel: baseViewModel) {
+                            baseViewModel.toggleFavorite(post: post)
                         }
+                        .id(post.id)
                     }
-                    .padding(.top)
                 }
-                .onAppear {
-                    // タップした投稿まで即スクロール
-                    proxy.scrollTo(startPost.id, anchor: .top)
-                }
+                .padding(.top)
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(Message.Button.cancel) { dismiss() }
-                }
+            .onAppear {
+                // タップした投稿まで即スクロール
+                proxy.scrollTo(startPost.id, anchor: .top)
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

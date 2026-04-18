@@ -13,7 +13,7 @@ enum Message {
         static let favorite   = "お気に入り"
         static let post       = "投稿"
         static let profile    = "プロフィール"
-        static let setting    = "設定"
+        static let other      = "その他"
         static let createPost = "投稿作成"
         static let editPost   = "投稿を編集"
     }
