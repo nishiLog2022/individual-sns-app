@@ -32,6 +32,16 @@ struct AppBaseView: View {
             }
             .tag(1)
             
+            // 保存済み
+            NavigationView {
+                SavedView(baseViewModel: baseViewModel)
+            }
+            .tabItem {
+                Image(systemName: Page.saved.image)
+                Text(Page.saved.title)
+            }
+            .tag(2)
+            
             // プロフィール
             NavigationView {
                 ProfileView(baseViewModel: baseViewModel)
@@ -40,7 +50,7 @@ struct AppBaseView: View {
                 Image(systemName: Page.profile.image)
                 Text(Page.profile.title)
             }
-            .tag(2)
+            .tag(3)
             
             // 設定
             NavigationView {
@@ -50,7 +60,7 @@ struct AppBaseView: View {
                 Image(systemName: Page.setting.image)
                 Text(Page.setting.title)
             }
-            .tag(3)
+            .tag(4)
         }
     }
 }
