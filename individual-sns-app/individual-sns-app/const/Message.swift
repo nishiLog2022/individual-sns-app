@@ -50,8 +50,10 @@ enum Message {
         static let editTitle       = "プロフィール編集"
         static let namePlaceholder = "名前を入力"
         static let nameLabel       = "名前"
-        static let changePhoto     = "写真を変更"
-        static let defaultName     = "My Diary"
+        static let changePhoto        = "写真を変更"
+        static let removePhoto        = "写真を削除"
+        static let removePhotoConfirm = "プロフィール写真を削除しますか？"
+        static let defaultName        = "My Diary"
     }
 
     // MARK: - 設定
