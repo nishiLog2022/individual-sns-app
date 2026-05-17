@@ -9,6 +9,7 @@ struct EditProfileView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
     @StateObject private var viewModel: EditProfileViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showRemoveConfirm = false
 
     init(baseViewModel: AppBaseViewModel) {
         self.baseViewModel = baseViewModel
@@ -20,39 +21,51 @@ struct EditProfileView: View {
             VStack(spacing: 32) {
 
                 // プロフィール写真
-                VStack(spacing: 12) {
-                    PhotosPicker(selection: $viewModel.state.selectedItem, matching: .images) {
-                        ZStack(alignment: .bottomTrailing) {
-                            profileImageView
-                                .frame(width: 100, height: 100)
-                                .clipShape(Circle())
+                VStack(spacing: 16) {
+                    profileImageView
+                        .frame(width: 100, height: 100)
+                        .clipShape(Circle())
 
-                            // カメラアイコン
-                            Circle()
-                                .fill(Color.blue)
-                                .frame(width: 28, height: 28)
-                                .overlay(
-                                    Image(systemName: SystemImage.Profile.camera)
-                                        .font(.system(size: 14))
-                                        .foregroundColor(.white)
-                                )
-                                .offset(x: 4, y: 4)
+                    // 写真操作ボタン
+                    HStack(spacing: 12) {
+                        // 写真を変更ボタン
+                        PhotosPicker(selection: $viewModel.state.selectedItem, matching: .images) {
+                            Label(Message.Profile.changePhoto, systemImage: SystemImage.Profile.camera)
+                                .font(.subheadline)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color(.systemGray6))
+                                .foregroundColor(.blue)
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                    }
-                    .onChange(of: viewModel.state.selectedItem) { newItem in
-                        Task {
-                            if let data = try? await newItem?.loadTransferable(type: Data.self),
-                               let uiImage = UIImage(data: data) {
-                                await MainActor.run {
-                                    viewModel.state.previewImage = uiImage
+                        .onChange(of: viewModel.state.selectedItem) { newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self),
+                                   let uiImage = UIImage(data: data) {
+                                    await MainActor.run {
+                                        viewModel.state.previewImage = uiImage
+                                        viewModel.state.shouldRemoveImage = false
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Text(Message.Profile.changePhoto)
-                        .font(.caption)
-                        .foregroundColor(.blue)
+                        // 画像が設定されている場合のみ削除ボタンを表示
+                        if viewModel.state.previewImage != nil {
+                            Button {
+                                showRemoveConfirm = true
+                            } label: {
+                                Label(Message.Profile.removePhoto, systemImage: "trash")
+                                    .font(.subheadline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(Color(.systemGray6))
+                                    .foregroundColor(.red)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
                 }
 
                 // 名前入力
@@ -69,6 +82,18 @@ struct EditProfileView: View {
                 Spacer()
             }
             .padding(.top, 32)
+            .confirmationDialog(
+                Message.Profile.removePhotoConfirm,
+                isPresented: $showRemoveConfirm,
+                titleVisibility: .visible
+            ) {
+                Button(Message.Profile.removePhoto, role: .destructive) {
+                    viewModel.state.previewImage = nil
+                    viewModel.state.selectedItem = nil
+                    viewModel.state.shouldRemoveImage = true
+                }
+                Button(Message.Button.cancel, role: .cancel) {}
+            }
             .navigationTitle(Message.Profile.editTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -77,7 +102,11 @@ struct EditProfileView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(Message.Button.save) {
-                        baseViewModel.updateProfile(name: viewModel.state.name, image: viewModel.state.previewImage !== baseViewModel.profileImage ? viewModel.state.previewImage : nil)
+                        baseViewModel.updateProfile(
+                            name: viewModel.state.name,
+                            image: viewModel.state.previewImage !== baseViewModel.profileImage ? viewModel.state.previewImage : nil,
+                            shouldRemoveImage: viewModel.state.shouldRemoveImage
+                        )
                         dismiss()
                     }
                     .fontWeight(.semibold)

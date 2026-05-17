@@ -37,9 +37,15 @@ class AppBaseViewModel: ObservableObject {
         loadPost()
     }
 
-    func updateProfile(name: String, image: UIImage?) {
+    func updateProfile(name: String, image: UIImage?, shouldRemoveImage: Bool = false) {
         profileName = name
-        if let image = image {
+        if shouldRemoveImage {
+            // 画像を未設定状態に戻す
+            if let old = profileImageFileName {
+                imageStorage.deleteImage(fileName: old)
+            }
+            profileImageFileName = nil
+        } else if let image = image {
             // 既存のプロフィール画像を削除してから保存
             if let old = profileImageFileName {
                 imageStorage.deleteImage(fileName: old)
