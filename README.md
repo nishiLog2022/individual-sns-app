@@ -1,1 +1,1 @@
-# individual-sis-app
+# individual-sns-app
