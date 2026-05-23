@@ -12,8 +12,10 @@ class AppBaseViewModel: ObservableObject {
     private let databaseService: DatabaseServiceProtocol = DiContainer.shared.container.resolve(DatabaseServiceProtocol.self)!
     private let postUsecase: PostUsecaseProtocol = DiContainer.shared.container.resolve(PostUsecaseProtocol.self)!
     private let imageStorage: ImageStorageProtocol = DiContainer.shared.container.resolve(ImageStorageProtocol.self)!
+    private let saveFolderUsecase: SaveFolderUsecaseProtocol = DiContainer.shared.container.resolve(SaveFolderUsecaseProtocol.self)!
 
     @Published var posts: [PostDto] = []
+    @Published var folders: [SaveFolderDto] = []
     @Published var selectedTab: Int = 0
 
     // MARK: - プロフィール
@@ -35,6 +37,8 @@ class AppBaseViewModel: ObservableObject {
         profileImageFileName = UserDefaults.standard.string(forKey: "profileImageFileName")
         getDbURL()
         loadPost()
+        _ = saveFolderUsecase.ensureDefaultFolder()
+        loadFolders()
     }
 
     func updateProfile(name: String, image: UIImage?, shouldRemoveImage: Bool = false) {
@@ -96,5 +100,39 @@ class AppBaseViewModel: ObservableObject {
     
     var favoritePosts: [PostDto] {
         posts.filter { $0.isFavorite }
+    }
+
+    // MARK: - フォルダ管理
+
+    func loadFolders() {
+        folders = saveFolderUsecase.getFolders()
+    }
+
+    func savePost(_ post: PostDto, to folder: SaveFolderDto) {
+        let updated = saveFolderUsecase.savePost(post, to: folder)
+        if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+            posts[index] = updated
+        }
+    }
+
+    func unsavePost(_ post: PostDto, from folder: SaveFolderDto) {
+        let updated = saveFolderUsecase.unsavePost(post, from: folder)
+        if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+            posts[index] = updated
+        }
+    }
+
+    func getPostsInFolder(_ folder: SaveFolderDto) -> [PostDto] {
+        saveFolderUsecase.getPostsInFolder(folder, allPosts: posts)
+    }
+
+    func createFolder(name: String) {
+        _ = saveFolderUsecase.createFolder(name: name)
+        loadFolders()
+    }
+
+    func deleteFolder(_ folder: SaveFolderDto) {
+        saveFolderUsecase.deleteFolder(folder)
+        loadFolders()
     }
 }

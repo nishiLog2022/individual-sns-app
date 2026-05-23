@@ -29,6 +29,7 @@ class DiContainer {
         container.register(ModelContainer.self){ _ in
             let schema = Schema([
                 TrnPost.self,
+                MstSaveFolder.self,
             ])
             
             let modelConfiguration = ModelConfiguration(
@@ -74,6 +75,10 @@ class DiContainer {
             let context = r.resolve(ModelContext.self)!
             return TrnPostRepository(context: context)
         }
+        container.register(MstSaveFolderRepositoryProtocol.self) { r in
+            let context = r.resolve(ModelContext.self)!
+            return MstSaveFolderRepository(context: context)
+        }
     }
 
     // Usecaseの登録
@@ -81,6 +86,13 @@ class DiContainer {
         let trnPostRepository = container.resolve(TrnPostRepository.self)!
         container.register(PostUsecaseProtocol.self) { _ in
             PostUsecase(trnPostRepository: trnPostRepository)
+        }
+        let mstSaveFolderRepository = container.resolve(MstSaveFolderRepositoryProtocol.self)!
+        container.register(SaveFolderUsecaseProtocol.self) { _ in
+            SaveFolderUsecase(
+                mstSaveFolderRepository: mstSaveFolderRepository,
+                trnPostRepository: trnPostRepository
+            )
         }
     }
     

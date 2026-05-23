@@ -12,6 +12,7 @@ enum SystemImage {
         static let home     = "house"
         static let favorite = "heart"
         static let post     = "plus.app.fill"
+        static let saved    = "bookmark"
         static let profile  = "square.grid.3x3"
         static let setting  = "ellipsis.circle"
     }
@@ -20,6 +21,8 @@ enum SystemImage {
     enum Post {
         static let like        = "heart"
         static let liked       = "heart.fill"
+        static let save        = "bookmark"
+        static let saved       = "bookmark.fill"
         static let edit        = "square.and.pencil"
         static let delete      = "trash"
         static let noImage     = "photo"
