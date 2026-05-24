@@ -31,7 +31,11 @@ struct SavedView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    viewModel.state.showAddFolder = true
+                    if viewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
+                        viewModel.state.showAddFolder = true
+                    } else {
+                        viewModel.state.showBilling = true
+                    }
                 } label: {
                     Image(systemName: "folder.badge.plus")
                 }
@@ -39,6 +43,9 @@ struct SavedView: View {
         }
         .sheet(isPresented: $viewModel.state.showAddFolder) {
             AddFolderSheet(baseViewModel: baseViewModel)
+        }
+        .sheet(isPresented: $viewModel.state.showBilling) {
+            BillingView()
         }
     }
 }

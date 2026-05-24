@@ -72,4 +72,32 @@ enum Message {
         static let privacyPolicy   = "プライバシーポリシー"
         static let terms = "利用規約"
     }
+
+    // MARK: - 課金
+    enum Billing {
+        static let navigationTitle    = "プレミアムプラン"
+        static let title              = "プレミアムにアップグレード"
+        static let subtitle           = "制限を解除してアプリをもっと活用しよう"
+        static let oneTimePurchase    = "買い切り（一度の購入で永久利用）"
+        static let purchaseButton     = "プレミアムを購入する"
+        static let restorePurchase    = "購入を復元する"
+        static let alreadyPremium     = "購入済み"
+        static let loadingProduct     = "商品情報を読み込み中..."
+        // 機能比較
+        static let featureFolder      = "フォルダ数"
+        static let featureFolderFree  = "1個まで"
+        static let featureFolderPremium = "無制限"
+        static let featurePhoto       = "写真枚数"
+        static let featurePhotoFree   = "\(Const.freeMaxPhotoCount)枚まで"
+        static let featurePhotoPremium = "\(Const.premiumMaxPhotoCount)枚まで"
+        // アラート
+        static let purchaseSuccess    = "購入が完了しました！プレミアム機能をお楽しみください。"
+        static let purchasePending    = "購入の承認を待っています。承認後に機能が解除されます。"
+        static let purchaseFailed     = "購入に失敗しました。しばらく経ってからお試しください。"
+        static let restoreSuccess     = "購入の復元が完了しました。"
+        static let restoreNotFound    = "復元できる購入が見つかりませんでした。"
+        // 制限エラー
+        static let folderLimitReached = "フォルダは\(Const.freeFolderLimit - 1)個まで作成できます。\nプレミアムにアップグレードすると無制限に作成できます。"
+        static let upgradeButton      = "プレミアムを見る"
+    }
 }
