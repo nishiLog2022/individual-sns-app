@@ -29,11 +29,12 @@ enum Message {
 
     // MARK: - フォルダ
     enum Folder {
-        static let defaultFolderName     = "保存済み"
+        static let defaultFolderName     = "すべての保存済み"
         static let newFolder             = "新しいフォルダ"
         static let addFolder             = "フォルダを作成"
         static let folderNamePlaceholder = "フォルダ名"
         static let saveToFolder          = "フォルダに保存"
+        static let deleteFolderConfirm   = "このフォルダを削除しますか？\nフォルダ内の投稿は保存済みから外れます。"
     }
 
     // MARK: - 空状態
