@@ -92,22 +92,21 @@ private struct FolderGridCell: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.systemGray5))
-                    .aspectRatio(1, contentMode: .fit)
-                if let image = thumbnail {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .aspectRatio(1, contentMode: .fit)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                } else {
-                    Image(systemName: "folder.fill")
-                        .font(.largeTitle)
-                        .foregroundColor(.secondary)
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .aspectRatio(1, contentMode: .fit)
+                .overlay {
+                    if let image = thumbnail {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Image(systemName: "folder.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.secondary)
+                    }
                 }
-            }
+                .clipShape(RoundedRectangle(cornerRadius: 10))
 
             Text(folder.name)
                 .font(.subheadline)
