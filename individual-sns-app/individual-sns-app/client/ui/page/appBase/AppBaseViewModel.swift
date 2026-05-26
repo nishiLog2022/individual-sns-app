@@ -134,5 +134,6 @@ class AppBaseViewModel: ObservableObject {
     func deleteFolder(_ folder: SaveFolderDto) {
         saveFolderUsecase.deleteFolder(folder)
         loadFolders()
+        loadPost()
     }
 }

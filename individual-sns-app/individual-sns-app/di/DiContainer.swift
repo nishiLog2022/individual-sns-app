@@ -94,12 +94,23 @@ class DiContainer {
                 trnPostRepository: trnPostRepository
             )
         }
+        // 課金Usecaseの登録（全ViewModel間でisPremium状態を共有するためシングルトンスコープ）
+        container.register(BillingUsecaseProtocol.self) { r in
+            let billingService = r.resolve(BillingServiceProtocol.self)!
+            return BillingUsecase(billingService: billingService)
+        }
+        .inObjectScope(.container)
     }
     
     // Serviceの登録
     func registerService() {
         container.register(ImageStorageProtocol.self) { _ in
             ImageStorage.shared
+        }
+        .inObjectScope(.container)
+        // 課金Serviceの登録
+        container.register(BillingServiceProtocol.self) { _ in
+            BillingService.shared
         }
         .inObjectScope(.container)
     }

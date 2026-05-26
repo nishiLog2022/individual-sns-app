@@ -17,6 +17,12 @@ struct individual_sns_appApp: App {
     var body: some Scene {
         WindowGroup {
             AppBaseView()
+                .task {
+                    // アプリ起動時にStoreKitのトランザクションを検証してUserDefaultsと同期する
+                    await DiContainer.shared.container
+                        .resolve(BillingUsecaseProtocol.self)!
+                        .syncPremiumStatus()
+                }
         }
         .modelContainer(modelContainer)
     }

@@ -31,8 +31,8 @@ struct CreatePostView: View {
                                 .cornerRadius(8)
                         }
 
-                        // 5枚未満のときのみ追加ボタンを表示
-                        if viewModel.state.selectedImages.count < 5 {
+                        // 上限枚数未満のときのみ追加ボタンを表示
+                        if viewModel.state.selectedImages.count < viewModel.maxPhotoCount {
                             Button {
                                 requestPhotoLibraryPermissionAndShowPicker()
                             } label: {
@@ -48,7 +48,7 @@ struct CreatePostView: View {
                             .photosPicker(
                                 isPresented: $viewModel.state.showPhotoPicker,
                                 selection: $viewModel.state.selectedItems,
-                                maxSelectionCount: 5,
+                                maxSelectionCount: viewModel.maxPhotoCount,
                                 matching: .images
                             )
                         }

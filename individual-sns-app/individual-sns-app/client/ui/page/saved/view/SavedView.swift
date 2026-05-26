@@ -8,30 +8,41 @@ struct SavedView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
     @StateObject private var viewModel = SavedViewModel()
 
+    private let columns = [GridItem(.flexible()), GridItem(.flexible())]
+
     var body: some View {
-        List {
-            ForEach(baseViewModel.folders) { folder in
-                NavigationLink {
-                    SavedPostListView(folder: folder, baseViewModel: baseViewModel)
-                } label: {
-                    FolderRowView(folder: folder, baseViewModel: baseViewModel)
-                }
-            }
-            .onDelete { indexSet in
-                indexSet.forEach { i in
-                    let folder = baseViewModel.folders[i]
-                    if !folder.isDefault {
-                        baseViewModel.deleteFolder(folder)
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(baseViewModel.folders) { folder in
+                    NavigationLink {
+                        SavedPostListView(folder: folder, baseViewModel: baseViewModel)
+                    } label: {
+                        FolderGridCell(folder: folder, baseViewModel: baseViewModel)
+                    }
+                    .foregroundColor(.primary)
+                    .contextMenu {
+                        if !folder.isDefault {
+                            Button(role: .destructive) {
+                                viewModel.state.folderToDelete = folder
+                            } label: {
+                                Label(Message.Button.delete, systemImage: "trash")
+                            }
+                        }
                     }
                 }
             }
+            .padding()
         }
         .navigationTitle(Page.saved.title)
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    viewModel.state.showAddFolder = true
+                    if viewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
+                        viewModel.state.showAddFolder = true
+                    } else {
+                        viewModel.state.showBilling = true
+                    }
                 } label: {
                     Image(systemName: "folder.badge.plus")
                 }
@@ -40,12 +51,32 @@ struct SavedView: View {
         .sheet(isPresented: $viewModel.state.showAddFolder) {
             AddFolderSheet(baseViewModel: baseViewModel)
         }
+        .sheet(isPresented: $viewModel.state.showBilling) {
+            BillingView()
+        }
+        .alert(
+            Message.Folder.deleteFolderConfirm,
+            isPresented: Binding(
+                get: { viewModel.state.folderToDelete != nil },
+                set: { if !$0 { viewModel.state.folderToDelete = nil } }
+            )
+        ) {
+            Button(Message.Button.delete, role: .destructive) {
+                if let folder = viewModel.state.folderToDelete {
+                    baseViewModel.deleteFolder(folder)
+                }
+                viewModel.state.folderToDelete = nil
+            }
+            Button(Message.Button.cancel, role: .cancel) {
+                viewModel.state.folderToDelete = nil
+            }
+        }
     }
 }
 
-// MARK: - フォルダ行
+// MARK: - フォルダグリッドセル
 
-private struct FolderRowView: View {
+private struct FolderGridCell: View {
     let folder: SaveFolderDto
     @ObservedObject var baseViewModel: AppBaseViewModel
     var imageStorage: ImageStorageProtocol = ImageStorage.shared
@@ -60,33 +91,31 @@ private struct FolderRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 12) {
-            // サムネイル
-            ZStack {
-                RoundedRectangle(cornerRadius: 6)
-                    .fill(Color(.systemGray5))
-                    .frame(width: 52, height: 52)
-                if let image = thumbnail {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 52, height: 52)
-                        .clipShape(RoundedRectangle(cornerRadius: 6))
-                } else {
-                    Image(systemName: "folder")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 6) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .aspectRatio(1, contentMode: .fit)
+                .overlay {
+                    if let image = thumbnail {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        Image(systemName: "folder.fill")
+                            .font(.largeTitle)
+                            .foregroundColor(.secondary)
+                    }
                 }
-            }
+                .clipShape(RoundedRectangle(cornerRadius: 10))
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(folder.name)
-                    .font(.body)
-                Text("\(posts.count)件")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
+            Text(folder.name)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .lineLimit(1)
+
+            Text("\(posts.count)件")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
-        .padding(.vertical, 4)
     }
 }

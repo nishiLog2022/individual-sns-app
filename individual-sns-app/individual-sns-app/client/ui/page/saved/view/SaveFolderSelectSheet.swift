@@ -8,43 +8,58 @@ struct SaveFolderSelectSheet: View {
     let post: PostDto
     @ObservedObject var baseViewModel: AppBaseViewModel
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var savedViewModel = SavedViewModel()
     @State private var showAddFolder = false
+    @State private var showBilling = false
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(baseViewModel.folders) { folder in
-                    Button {
-                        if post.savedFolderIds.contains(folder.mstSaveFolderId) {
-                            baseViewModel.unsavePost(post, from: folder)
-                        } else {
-                            baseViewModel.savePost(post, to: folder)
-                        }
-                        dismiss()
-                    } label: {
-                        HStack {
-                            Image(systemName: "folder")
-                                .foregroundColor(.accentColor)
-                            Text(folder.name)
-                            Spacer()
+            VStack(spacing: 0) {
+                List {
+                    ForEach(baseViewModel.folders) { folder in
+                        Button {
                             if post.savedFolderIds.contains(folder.mstSaveFolderId) {
-                                Image(systemName: "checkmark")
+                                baseViewModel.unsavePost(post, from: folder)
+                            } else {
+                                baseViewModel.savePost(post, to: folder)
+                            }
+                            dismiss()
+                        } label: {
+                            HStack {
+                                Image(systemName: "folder")
                                     .foregroundColor(.accentColor)
+                                Text(folder.name)
+                                Spacer()
+                                if post.savedFolderIds.contains(folder.mstSaveFolderId) {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
                             }
                         }
+                        .foregroundColor(.primary)
                     }
-                    .foregroundColor(.primary)
                 }
 
+                Divider()
+
                 Button {
-                    showAddFolder = true
+                    if savedViewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
+                        showAddFolder = true
+                    } else {
+                        showBilling = true
+                    }
                 } label: {
                     HStack {
                         Image(systemName: "folder.badge.plus")
-                            .foregroundColor(.accentColor)
                         Text(Message.Folder.newFolder)
-                            .foregroundColor(.primary)
+                            .fontWeight(.medium)
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
                 }
             }
             .navigationTitle(Message.Folder.saveToFolder)
@@ -56,6 +71,9 @@ struct SaveFolderSelectSheet: View {
             }
             .sheet(isPresented: $showAddFolder) {
                 AddFolderSheet(baseViewModel: baseViewModel)
+            }
+            .sheet(isPresented: $showBilling) {
+                BillingView()
             }
         }
     }
