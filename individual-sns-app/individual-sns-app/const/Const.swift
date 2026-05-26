@@ -18,7 +18,7 @@ class Const {
     // プライバシーポリシーのURL
     static let privacyPolicyUrl: String = "https://toridoriblog.com/running-support-app-privacy-policy/"
     // 課金: プレミアムプランの商品ID（App Store Connectで設定するProduct ID）
-    static let premiumProductId: String = "com.yourapp.individual_sns_app.premium"
+    static let premiumProductId: String = "individual_sns_app_premium"
     // 課金: 無料プランのフォルダ数上限（デフォルト保存済みフォルダ + 1つまで追加可能）
     static let freeFolderLimit: Int = 2
     // 課金: 無料プランの写真枚数上限
