@@ -10,6 +10,7 @@ struct AppBaseView: View {
     @StateObject var baseViewModel: AppBaseViewModel = AppBaseViewModel()
     
     var body: some View {
+        ZStack(alignment: .bottom) {
         TabView(selection: $baseViewModel.selectedTab) {
             
             // ホーム
@@ -62,5 +63,21 @@ struct AppBaseView: View {
             }
             .tag(4)
         }
+
+        if let message = baseViewModel.toastMessage {
+            Text(message)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color(.label).opacity(0.85))
+                .clipShape(Capsule())
+                .padding(.bottom, 90)
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                .allowsHitTesting(false)
+        }
+        }
+        .animation(.easeInOut(duration: 0.3), value: baseViewModel.toastMessage)
     }
 }

@@ -15,6 +15,7 @@ class BillingViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var alertMessage: String = ""
     @Published var showAlert: Bool = false
+    @Published var didPurchaseSucceed: Bool = false
 
     init() {
         isPremium = billingUsecase.isPremium
@@ -41,6 +42,7 @@ class BillingViewModel: ObservableObject {
             switch result {
             case .success:
                 isPremium = true
+                didPurchaseSucceed = true
                 alertMessage = Message.Billing.purchaseSuccess
                 showAlert = true
             case .userCancelled:

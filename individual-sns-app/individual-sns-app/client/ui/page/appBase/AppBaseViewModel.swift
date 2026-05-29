@@ -17,6 +17,7 @@ class AppBaseViewModel: ObservableObject {
     @Published var posts: [PostDto] = []
     @Published var folders: [SaveFolderDto] = []
     @Published var selectedTab: Int = 0
+    @Published var toastMessage: String? = nil
 
     // MARK: - プロフィール
     @Published var profileName: String {
@@ -106,6 +107,27 @@ class AppBaseViewModel: ObservableObject {
 
     func loadFolders() {
         folders = saveFolderUsecase.getFolders()
+    }
+
+    func toggleSaveToDefault(post: PostDto) {
+        if post.isSaved {
+            let updated = saveFolderUsecase.unsaveFromAllFolders(post)
+            if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+                posts[index] = updated
+            }
+            showToast("保存を解除しました")
+        } else {
+            if let defaultFolder = folders.first(where: { $0.isDefault }) {
+                savePost(post, to: defaultFolder)
+            }
+        }
+    }
+
+    func showToast(_ message: String) {
+        toastMessage = message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.toastMessage = nil
+        }
     }
 
     func savePost(_ post: PostDto, to folder: SaveFolderDto) {

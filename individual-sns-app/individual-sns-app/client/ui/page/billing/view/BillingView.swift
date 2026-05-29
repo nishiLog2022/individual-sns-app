@@ -64,7 +64,11 @@ struct BillingView: View {
                 }
             }
             .alert(viewModel.alertMessage, isPresented: $viewModel.showAlert) {
-                Button("OK") {}
+                Button("OK") {
+                    if viewModel.didPurchaseSucceed {
+                        dismiss()
+                    }
+                }
             }
             .onAppear {
                 viewModel.onAppear()
