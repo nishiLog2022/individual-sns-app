@@ -119,16 +119,21 @@ struct PostView: View {
                 // お気に入りボタン
                 Button(action: onLike) {
                     Image(systemName: post.isFavorite ? SystemImage.Post.liked : SystemImage.Post.like)
-                        .font(.title3)
+                        .font(.title2)
                         .foregroundColor(post.isFavorite ? .red : .secondary)
                 }
 
                 // 保存ボタン
                 Button {
-                    viewModel.state.showSaveFolderSelect = true
+                    if post.isSaved {
+                        baseViewModel.toggleSaveToDefault(post: post)
+                    } else {
+                        baseViewModel.toggleSaveToDefault(post: post)
+                        viewModel.state.showSaveFolderSelect = true
+                    }
                 } label: {
                     Image(systemName: post.isSaved ? SystemImage.Post.saved : SystemImage.Post.save)
-                        .font(.title3)
+                        .font(.title2)
                         .foregroundColor(post.isSaved ? .accentColor : .secondary)
                 }
 
@@ -137,7 +142,7 @@ struct PostView: View {
                     viewModel.state.showEdit = true
                 } label: {
                     Image(systemName: SystemImage.Post.edit)
-                        .font(.title3)
+                        .font(.title2)
                         .foregroundColor(.secondary)
                 }
             }
@@ -157,7 +162,9 @@ struct PostView: View {
             EditPostView(baseViewModel: baseViewModel, post: post)
         }
         // 保存フォルダ選択シート
-        .sheet(isPresented: $viewModel.state.showSaveFolderSelect) {
+        .sheet(isPresented: $viewModel.state.showSaveFolderSelect, onDismiss: {
+            baseViewModel.showToast("保存済みに追加しました")
+        }) {
             SaveFolderSelectSheet(post: post, baseViewModel: baseViewModel)
         }
         // 全画面詳細
@@ -275,7 +282,12 @@ struct PostDetailView: View {
                         }
                         // 保存
                         Button {
-                            viewModel.state.showSaveFolderSelect = true
+                            if post.isSaved {
+                                baseViewModel.toggleSaveToDefault(post: post)
+                            } else {
+                                baseViewModel.toggleSaveToDefault(post: post)
+                                viewModel.state.showSaveFolderSelect = true
+                            }
                         } label: {
                             Image(systemName: post.isSaved ? SystemImage.Post.saved : SystemImage.Post.save)
                                 .foregroundColor(post.isSaved ? .accentColor : .primary)
@@ -293,7 +305,9 @@ struct PostDetailView: View {
             .sheet(isPresented: $viewModel.state.showEdit) {
                 EditPostView(baseViewModel: baseViewModel, post: post)
             }
-            .sheet(isPresented: $viewModel.state.showSaveFolderSelect) {
+            .sheet(isPresented: $viewModel.state.showSaveFolderSelect, onDismiss: {
+                baseViewModel.showToast("保存済みに追加しました")
+            }) {
                 SaveFolderSelectSheet(post: post, baseViewModel: baseViewModel)
             }
         }
