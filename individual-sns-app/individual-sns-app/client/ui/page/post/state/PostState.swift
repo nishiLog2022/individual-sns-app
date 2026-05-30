@@ -8,4 +8,5 @@ struct PostState {
     var currentIndex: Int? = 0
     var showEdit: Bool = false
     var showDetail: Bool = false
+    var showSaveFolderSelect: Bool = false
 }
