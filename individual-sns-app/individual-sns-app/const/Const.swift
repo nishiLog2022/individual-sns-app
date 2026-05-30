@@ -17,6 +17,16 @@ class Const {
     static let termsUrl: String = "https://toridoriblog.com/running-support-app-terms-of-service/"
     // プライバシーポリシーのURL
     static let privacyPolicyUrl: String = "https://toridoriblog.com/running-support-app-privacy-policy/"
+    // 課金: プレミアムプランの商品ID（App Store Connectで設定するProduct ID）
+    static let premiumProductId: String = "individual_sns_app_premium"
+    // 課金: 無料プランのフォルダ数上限（デフォルト保存済みフォルダ + 1つまで追加可能）
+    static let freeFolderLimit: Int = 2
+    // 課金: 無料プランの写真枚数上限
+    static let freeMaxPhotoCount: Int = 3
+    // 課金: プレミアムプランの写真枚数上限
+    static let premiumMaxPhotoCount: Int = 10
+    // 課金: UserDefaultsのキー
+    static let isPremiumKey: String = "isPremium"
 }
 extension DateFormatter {
     /// yyyy/MM/dd 形式のフォーマッター

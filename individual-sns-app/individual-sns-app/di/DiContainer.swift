@@ -29,6 +29,7 @@ class DiContainer {
         container.register(ModelContainer.self){ _ in
             let schema = Schema([
                 TrnPost.self,
+                MstSaveFolder.self,
             ])
             
             let modelConfiguration = ModelConfiguration(
@@ -74,6 +75,10 @@ class DiContainer {
             let context = r.resolve(ModelContext.self)!
             return TrnPostRepository(context: context)
         }
+        container.register(MstSaveFolderRepositoryProtocol.self) { r in
+            let context = r.resolve(ModelContext.self)!
+            return MstSaveFolderRepository(context: context)
+        }
     }
 
     // Usecaseの登録
@@ -82,12 +87,30 @@ class DiContainer {
         container.register(PostUsecaseProtocol.self) { _ in
             PostUsecase(trnPostRepository: trnPostRepository)
         }
+        let mstSaveFolderRepository = container.resolve(MstSaveFolderRepositoryProtocol.self)!
+        container.register(SaveFolderUsecaseProtocol.self) { _ in
+            SaveFolderUsecase(
+                mstSaveFolderRepository: mstSaveFolderRepository,
+                trnPostRepository: trnPostRepository
+            )
+        }
+        // 課金Usecaseの登録（全ViewModel間でisPremium状態を共有するためシングルトンスコープ）
+        container.register(BillingUsecaseProtocol.self) { r in
+            let billingService = r.resolve(BillingServiceProtocol.self)!
+            return BillingUsecase(billingService: billingService)
+        }
+        .inObjectScope(.container)
     }
     
     // Serviceの登録
     func registerService() {
         container.register(ImageStorageProtocol.self) { _ in
             ImageStorage.shared
+        }
+        .inObjectScope(.container)
+        // 課金Serviceの登録
+        container.register(BillingServiceProtocol.self) { _ in
+            BillingService.shared
         }
         .inObjectScope(.container)
     }

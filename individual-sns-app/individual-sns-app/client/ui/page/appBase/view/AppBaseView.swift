@@ -10,6 +10,7 @@ struct AppBaseView: View {
     @StateObject var baseViewModel: AppBaseViewModel = AppBaseViewModel()
     
     var body: some View {
+        ZStack(alignment: .bottom) {
         TabView(selection: $baseViewModel.selectedTab) {
             
             // ホーム
@@ -32,6 +33,16 @@ struct AppBaseView: View {
             }
             .tag(1)
             
+            // 保存済み
+            NavigationView {
+                SavedView(baseViewModel: baseViewModel)
+            }
+            .tabItem {
+                Image(systemName: Page.saved.image)
+                Text(Page.saved.title)
+            }
+            .tag(2)
+            
             // プロフィール
             NavigationView {
                 ProfileView(baseViewModel: baseViewModel)
@@ -40,7 +51,7 @@ struct AppBaseView: View {
                 Image(systemName: Page.profile.image)
                 Text(Page.profile.title)
             }
-            .tag(2)
+            .tag(3)
             
             // 設定
             NavigationView {
@@ -50,7 +61,23 @@ struct AppBaseView: View {
                 Image(systemName: Page.setting.image)
                 Text(Page.setting.title)
             }
-            .tag(3)
+            .tag(4)
         }
+
+        if let message = baseViewModel.toastMessage {
+            Text(message)
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+                .background(Color(.label).opacity(0.85))
+                .clipShape(Capsule())
+                .padding(.bottom, 90)
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                .allowsHitTesting(false)
+        }
+        }
+        .animation(.easeInOut(duration: 0.3), value: baseViewModel.toastMessage)
     }
 }
