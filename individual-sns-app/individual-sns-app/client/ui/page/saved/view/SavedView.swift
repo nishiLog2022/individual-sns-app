@@ -22,6 +22,12 @@ struct SavedView: View {
                     .foregroundColor(.primary)
                     .contextMenu {
                         if !folder.isDefault {
+                            Button {
+                                viewModel.state.renameFolderName = folder.name
+                                viewModel.state.folderToRename = folder
+                            } label: {
+                                Label(Message.Folder.renameFolder, systemImage: "pencil")
+                            }
                             Button(role: .destructive) {
                                 viewModel.state.folderToDelete = folder
                             } label: {
@@ -53,6 +59,25 @@ struct SavedView: View {
         }
         .sheet(isPresented: $viewModel.state.showBilling) {
             BillingView()
+        }
+        .alert(
+            Message.Folder.renameFolderTitle,
+            isPresented: Binding(
+                get: { viewModel.state.folderToRename != nil },
+                set: { if !$0 { viewModel.state.folderToRename = nil } }
+            )
+        ) {
+            TextField(Message.Folder.folderNamePlaceholder, text: $viewModel.state.renameFolderName)
+            Button(Message.Folder.renameFolder) {
+                let trimmed = viewModel.state.renameFolderName.trimmingCharacters(in: .whitespaces)
+                if !trimmed.isEmpty, let folder = viewModel.state.folderToRename {
+                    baseViewModel.renameFolder(folder, newName: trimmed)
+                }
+                viewModel.state.folderToRename = nil
+            }
+            Button(Message.Button.cancel, role: .cancel) {
+                viewModel.state.folderToRename = nil
+            }
         }
         .alert(
             Message.Folder.deleteFolderConfirm,

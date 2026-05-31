@@ -12,5 +12,6 @@ protocol SaveFolderUsecaseProtocol {
     func unsavePost(_ post: PostDto, from folder: SaveFolderDto) -> PostDto
     func unsaveFromAllFolders(_ post: PostDto) -> PostDto
     func getPostsInFolder(_ folder: SaveFolderDto, allPosts: [PostDto]) -> [PostDto]
+    func renameFolder(_ folder: SaveFolderDto, newName: String)
     func ensureDefaultFolder() -> SaveFolderDto
 }

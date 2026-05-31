@@ -23,12 +23,17 @@ struct CreatePostView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(viewModel.state.selectedImages) { selected in
-                            Image(uiImage: selected.image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(8)
+                            Button {
+                                requestPhotoLibraryPermissionAndShowPicker()
+                            } label: {
+                                Image(uiImage: selected.image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(8)
+                            }
+                            .buttonStyle(.plain)
                         }
 
                         // 上限枚数未満のときのみ追加ボタンを表示
@@ -45,14 +50,14 @@ struct CreatePostView: View {
                                         .font(.title)
                                 }
                             }
-                            .photosPicker(
-                                isPresented: $viewModel.state.showPhotoPicker,
-                                selection: $viewModel.state.selectedItems,
-                                maxSelectionCount: viewModel.maxPhotoCount,
-                                matching: .images
-                            )
                         }
                     }
+                    .photosPicker(
+                        isPresented: $viewModel.state.showPhotoPicker,
+                        selection: $viewModel.state.selectedItems,
+                        maxSelectionCount: viewModel.maxPhotoCount,
+                        matching: .images
+                    )
                     .padding()
                 }
                 
