@@ -77,6 +77,14 @@ class SaveFolderUsecase: SaveFolderUsecaseProtocol {
         return updated
     }
 
+    func renameFolder(_ folder: SaveFolderDto, newName: String) {
+        let all = mstSaveFolderRepository.getFolders()
+        if let target = all.first(where: { $0.mstSaveFolderId == folder.mstSaveFolderId }) {
+            target.name = newName
+            mstSaveFolderRepository.updateFolder(target)
+        }
+    }
+
     func ensureDefaultFolder() -> SaveFolderDto {
         mstSaveFolderRepository.ensureDefaultFolderExists().createDto()
     }

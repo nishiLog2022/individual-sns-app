@@ -24,6 +24,10 @@ class MstSaveFolderRepository: MstSaveFolderRepositoryProtocol {
         try? context.save()
     }
 
+    func updateFolder(_ folder: MstSaveFolder) {
+        try? context.save()
+    }
+
     func deleteFolder(_ folder: MstSaveFolder) {
         context.delete(folder)
         try? context.save()

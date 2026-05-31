@@ -33,12 +33,17 @@ struct EditPostView: View {
                                 ForEach(viewModel.state.existingImagePaths, id: \.self) { path in
                                     if let uiImage = ImageStorage.shared.loadImage(fileName: path) {
                                         ZStack(alignment: .topTrailing) {
-                                            Image(uiImage: uiImage)
-                                                .resizable()
-                                                .scaledToFill()
-                                                .frame(width: 100, height: 100)
-                                                .clipped()
-                                                .cornerRadius(8)
+                                            Button {
+                                                openPickerIfAllowed()
+                                            } label: {
+                                                Image(uiImage: uiImage)
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 100, height: 100)
+                                                    .clipped()
+                                                    .cornerRadius(8)
+                                            }
+                                            .buttonStyle(.plain)
 
                                             // 削除ボタン
                                             Button {
@@ -55,21 +60,24 @@ struct EditPostView: View {
                                 }
                                 // 新たに選んだ画像
                                 ForEach(viewModel.state.selectedImages, id: \.self) { image in
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .frame(width: 100, height: 100)
-                                        .clipped()
-                                        .cornerRadius(8)
+                                    Button {
+                                        openPickerIfAllowed()
+                                    } label: {
+                                        Image(uiImage: image)
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 100, height: 100)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                // 既存＋新規の合計が5枚未満のときのみ追加ボタンを表示
+                                // 既存＋新規の合計が上限未満のときのみ追加ボタンを表示
                                 let totalImageCount = viewModel.state.existingImagePaths.count + viewModel.state.selectedImages.count
-                                if totalImageCount < 5 {
-                                    PhotosPicker(
-                                        selection: $viewModel.state.selectedItems,
-                                        maxSelectionCount: 5,
-                                        matching: .images
-                                    ) {
+                                if totalImageCount < viewModel.maxPhotoCount {
+                                    Button {
+                                        openPickerIfAllowed()
+                                    } label: {
                                         ZStack {
                                             RoundedRectangle(cornerRadius: 8)
                                                 .fill(Color.gray.opacity(0.2))
@@ -158,7 +166,19 @@ struct EditPostView: View {
             .onChange(of: viewModel.state.selectedItems) { newItems in
                 loadNewImages(from: newItems)
             }
+            .photosPicker(
+                isPresented: $viewModel.state.showPhotoPicker,
+                selection: $viewModel.state.selectedItems,
+                maxSelectionCount: max(1, viewModel.maxPhotoCount - viewModel.state.existingImagePaths.count),
+                matching: .images
+            )
         }
+    }
+
+    private func openPickerIfAllowed() {
+        let remaining = viewModel.maxPhotoCount - viewModel.state.existingImagePaths.count
+        guard remaining > 0 || !viewModel.state.selectedImages.isEmpty else { return }
+        viewModel.state.showPhotoPicker = true
     }
 
     private func saveEdit() {

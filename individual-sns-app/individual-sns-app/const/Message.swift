@@ -35,6 +35,8 @@ enum Message {
         static let folderNamePlaceholder = "フォルダ名"
         static let saveToFolder          = "フォルダに保存"
         static let deleteFolderConfirm   = "このフォルダを削除しますか？\nフォルダ内の投稿は保存済みから外れます。"
+        static let renameFolder          = "名前を変更"
+        static let renameFolderTitle     = "フォルダ名を変更"
     }
 
     // MARK: - 空状態

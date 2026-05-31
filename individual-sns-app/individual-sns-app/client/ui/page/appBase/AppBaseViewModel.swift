@@ -153,6 +153,11 @@ class AppBaseViewModel: ObservableObject {
         loadFolders()
     }
 
+    func renameFolder(_ folder: SaveFolderDto, newName: String) {
+        saveFolderUsecase.renameFolder(folder, newName: newName)
+        loadFolders()
+    }
+
     func deleteFolder(_ folder: SaveFolderDto) {
         saveFolderUsecase.deleteFolder(folder)
         loadFolders()
