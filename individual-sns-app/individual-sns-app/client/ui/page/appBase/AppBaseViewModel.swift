@@ -12,9 +12,12 @@ class AppBaseViewModel: ObservableObject {
     private let databaseService: DatabaseServiceProtocol = DiContainer.shared.container.resolve(DatabaseServiceProtocol.self)!
     private let postUsecase: PostUsecaseProtocol = DiContainer.shared.container.resolve(PostUsecaseProtocol.self)!
     private let imageStorage: ImageStorageProtocol = DiContainer.shared.container.resolve(ImageStorageProtocol.self)!
+    private let saveFolderUsecase: SaveFolderUsecaseProtocol = DiContainer.shared.container.resolve(SaveFolderUsecaseProtocol.self)!
 
     @Published var posts: [PostDto] = []
+    @Published var folders: [SaveFolderDto] = []
     @Published var selectedTab: Int = 0
+    @Published var toastMessage: String? = nil
 
     // MARK: - プロフィール
     @Published var profileName: String {
@@ -35,6 +38,8 @@ class AppBaseViewModel: ObservableObject {
         profileImageFileName = UserDefaults.standard.string(forKey: "profileImageFileName")
         getDbURL()
         loadPost()
+        _ = saveFolderUsecase.ensureDefaultFolder()
+        loadFolders()
     }
 
     func updateProfile(name: String, image: UIImage?, shouldRemoveImage: Bool = false) {
@@ -96,5 +101,66 @@ class AppBaseViewModel: ObservableObject {
     
     var favoritePosts: [PostDto] {
         posts.filter { $0.isFavorite }
+    }
+
+    // MARK: - フォルダ管理
+
+    func loadFolders() {
+        folders = saveFolderUsecase.getFolders()
+    }
+
+    func toggleSaveToDefault(post: PostDto) {
+        if post.isSaved {
+            let updated = saveFolderUsecase.unsaveFromAllFolders(post)
+            if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+                posts[index] = updated
+            }
+            showToast("保存を解除しました")
+        } else {
+            if let defaultFolder = folders.first(where: { $0.isDefault }) {
+                savePost(post, to: defaultFolder)
+            }
+        }
+    }
+
+    func showToast(_ message: String) {
+        toastMessage = message
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            self?.toastMessage = nil
+        }
+    }
+
+    func savePost(_ post: PostDto, to folder: SaveFolderDto) {
+        let updated = saveFolderUsecase.savePost(post, to: folder)
+        if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+            posts[index] = updated
+        }
+    }
+
+    func unsavePost(_ post: PostDto, from folder: SaveFolderDto) {
+        let updated = saveFolderUsecase.unsavePost(post, from: folder)
+        if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
+            posts[index] = updated
+        }
+    }
+
+    func getPostsInFolder(_ folder: SaveFolderDto) -> [PostDto] {
+        saveFolderUsecase.getPostsInFolder(folder, allPosts: posts)
+    }
+
+    func createFolder(name: String) {
+        _ = saveFolderUsecase.createFolder(name: name)
+        loadFolders()
+    }
+
+    func renameFolder(_ folder: SaveFolderDto, newName: String) {
+        saveFolderUsecase.renameFolder(folder, newName: newName)
+        loadFolders()
+    }
+
+    func deleteFolder(_ folder: SaveFolderDto) {
+        saveFolderUsecase.deleteFolder(folder)
+        loadFolders()
+        loadPost()
     }
 }

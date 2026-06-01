@@ -23,16 +23,21 @@ struct CreatePostView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
                         ForEach(viewModel.state.selectedImages) { selected in
-                            Image(uiImage: selected.image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 100, height: 100)
-                                .clipped()
-                                .cornerRadius(8)
+                            Button {
+                                requestPhotoLibraryPermissionAndShowPicker()
+                            } label: {
+                                Image(uiImage: selected.image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 100, height: 100)
+                                    .clipped()
+                                    .cornerRadius(8)
+                            }
+                            .buttonStyle(.plain)
                         }
 
-                        // 5枚未満のときのみ追加ボタンを表示
-                        if viewModel.state.selectedImages.count < 5 {
+                        // 上限枚数未満のときのみ追加ボタンを表示
+                        if viewModel.state.selectedImages.count < viewModel.maxPhotoCount {
                             Button {
                                 requestPhotoLibraryPermissionAndShowPicker()
                             } label: {
@@ -45,14 +50,14 @@ struct CreatePostView: View {
                                         .font(.title)
                                 }
                             }
-                            .photosPicker(
-                                isPresented: $viewModel.state.showPhotoPicker,
-                                selection: $viewModel.state.selectedItems,
-                                maxSelectionCount: 5,
-                                matching: .images
-                            )
                         }
                     }
+                    .photosPicker(
+                        isPresented: $viewModel.state.showPhotoPicker,
+                        selection: $viewModel.state.selectedItems,
+                        maxSelectionCount: viewModel.maxPhotoCount,
+                        matching: .images
+                    )
                     .padding()
                 }
                 

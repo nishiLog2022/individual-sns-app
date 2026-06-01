@@ -12,8 +12,37 @@ struct SettingsView: View {
 
     var body: some View {
         List {
-            Link(destination: URL(string: Const.privacyPolicyUrl)!, label: { Text(Message.Setting.privacyPolicy) })
-            Link(destination: URL(string: Const.termsUrl)!, label: { Text(Message.Setting.terms) })
+            // 課金セクション
+            Section {
+                Button {
+                    viewModel.state.showBilling = true
+                } label: {
+                    HStack {
+                        Image(systemName: "crown.fill")
+                            .foregroundColor(.yellow)
+                        if viewModel.isPremium {
+                            Text(Message.Billing.alreadyPremium)
+                                .foregroundColor(.primary)
+                        } else {
+                            Text(Message.Billing.navigationTitle)
+                                .foregroundColor(.primary)
+                        }
+                        Spacer()
+                        if !viewModel.isPremium {
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.secondary)
+                                .font(.caption)
+                        }
+                    }
+                }
+                .disabled(viewModel.isPremium)
+            }
+
+            // その他のリンク
+            Section {
+                Link(destination: URL(string: Const.privacyPolicyUrl)!, label: { Text(Message.Setting.privacyPolicy) })
+                Link(destination: URL(string: Const.termsUrl)!, label: { Text(Message.Setting.terms) })
+            }
         }
         .navigationTitle(Page.setting.title)
         .navigationBarTitleDisplayMode(.inline)
@@ -23,6 +52,11 @@ struct SettingsView: View {
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity)
                 .padding(.bottom, 8)
+        }
+        .sheet(isPresented: $viewModel.state.showBilling, onDismiss: {
+            viewModel.refreshPremiumStatus()
+        }) {
+            BillingView()
         }
     }
 }

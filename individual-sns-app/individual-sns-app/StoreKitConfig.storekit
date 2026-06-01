@@ -1,0 +1,71 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "StoreKitConfig",
+  "nonConsumableProducts" : [
+    {
+      "displayPrice" : "300",
+      "familyShareable" : false,
+      "internalID" : "premium_plan_001",
+      "localizations" : [
+        {
+          "description" : "フォルダ数の上限解除など、プレミアム機能をすべて利用できます。",
+          "displayName" : "プレミアムプラン",
+          "locale" : "ja_JP"
+        }
+      ],
+      "productID" : "nishilog.individual-sns-app.premium",
+      "referenceName" : "プレミアムプラン",
+      "type" : "NonConsumable"
+    }
+  ],
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "300",
+      "familyShareable" : false,
+      "internalID" : "01E2C8F4",
+      "localizations" : [
+        {
+          "description" : "individual_sns_app_premium",
+          "displayName" : "Poslyプレミアム",
+          "locale" : "ja"
+        }
+      ],
+      "productID" : "individual_sns_app_premium",
+      "referenceName" : "Poslyプレミアム",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "ja",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "JPN",
+    "_storeKitErrors" : [
+
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 5,
+    "minor" : 0
+  }
+}
