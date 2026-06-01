@@ -12,7 +12,7 @@ enum Message {
         static let home       = "ホーム"
         static let favorite   = "お気に入り"
         static let post       = "投稿"
-        static let saved      = "保存済み"
+        static let saved      = "コレクション"
         static let profile    = "プロフィール"
         static let other      = "その他"
         static let createPost = "投稿作成"
@@ -29,12 +29,12 @@ enum Message {
 
     // MARK: - フォルダ
     enum Folder {
-        static let defaultFolderName     = "すべての保存済み"
+        static let defaultFolderName     = "すべてのコレクション"
         static let newFolder             = "新しいフォルダ"
         static let addFolder             = "フォルダを作成"
         static let folderNamePlaceholder = "フォルダ名"
         static let saveToFolder          = "フォルダに保存"
-        static let deleteFolderConfirm   = "このフォルダを削除しますか？\nフォルダ内の投稿は保存済みから外れます。"
+        static let deleteFolderConfirm   = "このフォルダを削除しますか？\nフォルダ内の投稿はコレクションから外れます。"
         static let renameFolder          = "名前を変更"
         static let renameFolderTitle     = "フォルダ名を変更"
     }

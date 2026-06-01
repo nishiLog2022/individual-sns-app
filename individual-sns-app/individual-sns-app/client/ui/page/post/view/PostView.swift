@@ -163,7 +163,7 @@ struct PostView: View {
         }
         // 保存フォルダ選択シート
         .sheet(isPresented: $viewModel.state.showSaveFolderSelect, onDismiss: {
-            baseViewModel.showToast("保存済みに追加しました")
+            baseViewModel.showToast("コレクションに追加しました")
         }) {
             SaveFolderSelectSheet(post: post, baseViewModel: baseViewModel)
         }
@@ -306,7 +306,7 @@ struct PostDetailView: View {
                 EditPostView(baseViewModel: baseViewModel, post: post)
             }
             .sheet(isPresented: $viewModel.state.showSaveFolderSelect, onDismiss: {
-                baseViewModel.showToast("保存済みに追加しました")
+                baseViewModel.showToast("コレクションに追加しました")
             }) {
                 SaveFolderSelectSheet(post: post, baseViewModel: baseViewModel)
             }
