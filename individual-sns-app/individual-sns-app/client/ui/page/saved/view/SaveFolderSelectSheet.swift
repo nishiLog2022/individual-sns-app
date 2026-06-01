@@ -67,7 +67,7 @@ struct SaveFolderSelectSheet: View {
                             Text("フォルダに追加しました")
                                 .font(.title3)
                                 .fontWeight(.bold)
-                            Text("保存済みに追加されました")
+                            Text("コレクションに追加されました")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }

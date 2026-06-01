@@ -33,7 +33,7 @@ struct AppBaseView: View {
             }
             .tag(1)
             
-            // 保存済み
+            // コレクション
             NavigationView {
                 SavedView(baseViewModel: baseViewModel)
             }
