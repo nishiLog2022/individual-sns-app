@@ -25,6 +25,7 @@ struct SavedView: View {
                             Button {
                                 viewModel.state.renameFolderName = folder.name
                                 viewModel.state.folderToRename = folder
+                                viewModel.state.showRenameFolder = true
                             } label: {
                                 Label(Message.Folder.renameFolder, systemImage: "pencil")
                             }
@@ -54,30 +55,33 @@ struct SavedView: View {
                 }
             }
         }
-        .sheet(isPresented: $viewModel.state.showAddFolder) {
-            AddFolderSheet(baseViewModel: baseViewModel)
+        .sheet(isPresented: $viewModel.state.showAddFolder, onDismiss: {
+            viewModel.state.newFolderName = ""
+        }) {
+            AddFolderSheet(
+                title: Message.Folder.addFolder,
+                actionLabel: Message.Folder.addFolder,
+                folderName: $viewModel.state.newFolderName
+            ) { trimmed in
+                baseViewModel.createFolder(name: trimmed)
+            }
+        }
+        .sheet(isPresented: $viewModel.state.showRenameFolder, onDismiss: {
+            viewModel.state.renameFolderName = ""
+            viewModel.state.folderToRename = nil
+        }) {
+            AddFolderSheet(
+                title: Message.Folder.renameFolderTitle,
+                actionLabel: Message.Folder.renameFolder,
+                folderName: $viewModel.state.renameFolderName
+            ) { trimmed in
+                if let folder = viewModel.state.folderToRename {
+                    baseViewModel.renameFolder(folder, newName: trimmed)
+                }
+            }
         }
         .sheet(isPresented: $viewModel.state.showBilling) {
             BillingView()
-        }
-        .alert(
-            Message.Folder.renameFolderTitle,
-            isPresented: Binding(
-                get: { viewModel.state.folderToRename != nil },
-                set: { if !$0 { viewModel.state.folderToRename = nil } }
-            )
-        ) {
-            TextField(Message.Folder.folderNamePlaceholder, text: $viewModel.state.renameFolderName)
-            Button(Message.Folder.renameFolder) {
-                let trimmed = viewModel.state.renameFolderName.trimmingCharacters(in: .whitespaces)
-                if !trimmed.isEmpty, let folder = viewModel.state.folderToRename {
-                    baseViewModel.renameFolder(folder, newName: trimmed)
-                }
-                viewModel.state.folderToRename = nil
-            }
-            Button(Message.Button.cancel, role: .cancel) {
-                viewModel.state.folderToRename = nil
-            }
         }
         .alert(
             Message.Folder.deleteFolderConfirm,

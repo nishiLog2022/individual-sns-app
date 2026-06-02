@@ -16,4 +16,5 @@ struct CreatePostState {
     var selectedItems: [PhotosPickerItem] = []
     var selectedImages: [SelectedImage] = []
     var showPhotoPicker: Bool = false
+    var isLoadingImages: Bool = false
 }

@@ -13,6 +13,7 @@ struct EditPostState {
     var existingImagePaths: [String]
     var showDeleteConfirm: Bool = false
     var showPhotoPicker: Bool = false
+    var isLoadingImages: Bool = false
 
     init(post: PostDto) {
         self.caption = post.caption

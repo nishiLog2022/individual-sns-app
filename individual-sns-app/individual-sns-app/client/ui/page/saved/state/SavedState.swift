@@ -12,4 +12,5 @@ struct SavedState {
     var folderToDelete: SaveFolderDto? = nil
     var folderToRename: SaveFolderDto? = nil
     var renameFolderName: String = ""
+    var showRenameFolder: Bool = false
 }

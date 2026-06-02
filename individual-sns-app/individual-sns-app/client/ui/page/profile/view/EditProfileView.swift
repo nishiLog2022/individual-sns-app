@@ -9,7 +9,6 @@ struct EditProfileView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
     @StateObject private var viewModel: EditProfileViewModel
     @Environment(\.dismiss) private var dismiss
-    @State private var showRemoveConfirm = false
 
     init(baseViewModel: AppBaseViewModel) {
         self.baseViewModel = baseViewModel
@@ -38,7 +37,7 @@ struct EditProfileView: View {
                                 .foregroundColor(.blue)
                                 .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
-                        .onChange(of: viewModel.state.selectedItem) { newItem in
+                        .onChange(of: viewModel.state.selectedItem) { _, newItem in
                             Task {
                                 if let data = try? await newItem?.loadTransferable(type: Data.self),
                                    let uiImage = UIImage(data: data) {
@@ -53,7 +52,7 @@ struct EditProfileView: View {
                         // 画像が設定されている場合のみ削除ボタンを表示
                         if viewModel.state.previewImage != nil {
                             Button {
-                                showRemoveConfirm = true
+                                viewModel.state.showRemoveConfirm = true
                             } label: {
                                 Label(Message.Profile.removePhoto, systemImage: "trash")
                                     .font(.subheadline)
@@ -70,12 +69,23 @@ struct EditProfileView: View {
 
                 // 名前入力
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(Message.Profile.nameLabel)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text(Message.Profile.nameLabel)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Text("\(viewModel.state.name.count) / \(Const.maxProfileNameLength)")
+                            .font(.caption)
+                            .foregroundColor(viewModel.state.name.count >= Const.maxProfileNameLength ? .red : .secondary)
+                    }
                     TextField(Message.Profile.namePlaceholder, text: $viewModel.state.name)
                         .textFieldStyle(.roundedBorder)
                         .font(.body)
+                        .onChange(of: viewModel.state.name) { _, newValue in
+                            if newValue.count > Const.maxProfileNameLength {
+                                viewModel.state.name = String(newValue.prefix(Const.maxProfileNameLength))
+                            }
+                        }
                 }
                 .padding(.horizontal)
 
@@ -84,7 +94,7 @@ struct EditProfileView: View {
             .padding(.top, 32)
             .confirmationDialog(
                 Message.Profile.removePhotoConfirm,
-                isPresented: $showRemoveConfirm,
+                isPresented: $viewModel.state.showRemoveConfirm,
                 titleVisibility: .visible
             ) {
                 Button(Message.Profile.removePhoto, role: .destructive) {
