@@ -97,11 +97,11 @@ struct EditPostView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(viewModel.state.caption.isEmpty ? Color.gray : Color.blue)
+                        .background(viewModel.canSave ? Color.blue : Color.gray)
                         .foregroundColor(.white)
                         .cornerRadius(12)
                 }
-                .disabled(viewModel.state.caption.isEmpty)
+                .disabled(!viewModel.canSave)
                 .padding()
             }
             .navigationTitle(Message.Title.editPost)
