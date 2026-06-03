@@ -40,6 +40,9 @@ class AppBaseViewModel: ObservableObject {
         loadPost()
         _ = saveFolderUsecase.ensureDefaultFolder()
         loadFolders()
+        // 起動時にバックグラウンドでStoreKit購入状態を同期
+        let billingUsecase = DiContainer.shared.container.resolve(BillingUsecaseProtocol.self)!
+        Task { await billingUsecase.syncPremiumStatus() }
     }
 
     func updateProfile(name: String, image: UIImage?, shouldRemoveImage: Bool = false) {

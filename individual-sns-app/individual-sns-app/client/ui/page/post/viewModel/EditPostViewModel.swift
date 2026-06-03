@@ -18,6 +18,10 @@ class EditPostViewModel: ObservableObject {
         state.existingImagePaths.filter { !state.imagesToDelete.contains($0) }
     }
 
+    var canSave: Bool {
+        !state.caption.isEmpty || !visibleImagePaths.isEmpty
+    }
+
     var hasUnsavedChanges: Bool {
         state.caption != originalPost.caption || !state.imagesToDelete.isEmpty
     }
