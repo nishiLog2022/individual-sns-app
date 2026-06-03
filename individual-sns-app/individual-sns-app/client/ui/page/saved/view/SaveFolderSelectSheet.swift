@@ -9,8 +9,6 @@ struct SaveFolderSelectSheet: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
     @Environment(\.dismiss) private var dismiss
     @StateObject private var savedViewModel = SavedViewModel()
-    @State private var showAddFolder = false
-    @State private var showBilling = false
 
     var customFolders: [SaveFolderDto] {
         baseViewModel.folders.filter { !$0.isDefault }
@@ -29,9 +27,9 @@ struct SaveFolderSelectSheet: View {
                     Spacer()
                     Button {
                         if savedViewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
-                            showAddFolder = true
+                            savedViewModel.state.showAddFolder = true
                         } else {
-                            showBilling = true
+                            savedViewModel.state.showBilling = true
                         }
                     } label: {
                         Image(systemName: "folder.badge.plus")
@@ -131,10 +129,18 @@ struct SaveFolderSelectSheet: View {
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.hidden)
-        .sheet(isPresented: $showAddFolder) {
-            AddFolderSheet(baseViewModel: baseViewModel)
+        .sheet(isPresented: $savedViewModel.state.showAddFolder, onDismiss: {
+            savedViewModel.state.newFolderName = ""
+        }) {
+            AddFolderSheet(
+                title: Message.Folder.addFolder,
+                actionLabel: Message.Folder.addFolder,
+                folderName: $savedViewModel.state.newFolderName
+            ) { trimmed in
+                baseViewModel.createFolder(name: trimmed)
+            }
         }
-        .sheet(isPresented: $showBilling) {
+        .sheet(isPresented: $savedViewModel.state.showBilling) {
             BillingView()
         }
     }
@@ -199,6 +205,7 @@ private struct FolderSelectCell: View {
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .animation(.easeInOut(duration: 0.15), value: isSelected)

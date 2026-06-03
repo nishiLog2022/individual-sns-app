@@ -4,15 +4,15 @@
 //
 import Foundation
 import SwiftUI
-import PhotosUI
 
 struct EditPostState {
     var caption: String
-    var selectedItems: [PhotosPickerItem] = []
-    var selectedImages: [UIImage] = []
     var existingImagePaths: [String]
+    var imagesToDelete: [String] = []
     var showDeleteConfirm: Bool = false
-    var showPhotoPicker: Bool = false
+    var showImageDeleteConfirm: Bool = false
+    var imagePathToDelete: String? = nil
+    var showDiscardConfirm: Bool = false
 
     init(post: PostDto) {
         self.caption = post.caption
