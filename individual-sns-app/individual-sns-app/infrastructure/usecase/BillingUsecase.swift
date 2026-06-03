@@ -30,7 +30,12 @@ class BillingUsecase: BillingUsecaseProtocol {
 
     func syncPremiumStatus() async {
         let verified = await billingService.verifyPurchase(productId: Const.premiumProductId)
-        UserDefaults.standard.set(verified, forKey: Const.isPremiumKey)
+        // StoreKitが購入を確認できた場合のみ true に更新する。
+        // 未確認（ネットワーク不可・テスト環境リセット等）の場合は既存値を保持し、
+        // 誤って premium 状態が解除されるのを防ぐ。
+        if verified {
+            UserDefaults.standard.set(true, forKey: Const.isPremiumKey)
+        }
     }
 
     func restorePurchases() async -> Bool {
