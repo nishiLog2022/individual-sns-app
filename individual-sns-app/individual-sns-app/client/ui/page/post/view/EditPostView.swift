@@ -3,7 +3,6 @@
 //  individual-sns-app
 //
 import SwiftUI
-import PhotosUI
 
 struct EditPostView: View {
     @ObservedObject var baseViewModel: AppBaseViewModel
@@ -27,75 +26,50 @@ struct EditPostView: View {
                     VStack(alignment: .leading, spacing: 16) {
 
                         // 画像エリア
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                // 既存の画像
-                                ForEach(viewModel.state.existingImagePaths, id: \.self) { path in
-                                    if let uiImage = ImageStorage.shared.loadImage(fileName: path) {
-                                        ZStack(alignment: .topTrailing) {
-                                            Button {
-                                                openPickerIfAllowed()
-                                            } label: {
-                                                Image(uiImage: uiImage)
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 100, height: 100)
-                                                    .clipped()
-                                                    .cornerRadius(8)
+                        if !viewModel.visibleImagePaths.isEmpty {
+                            GeometryReader { geo in
+                                let width = geo.size.width
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 0) {
+                                        ForEach(viewModel.visibleImagePaths, id: \.self) { path in
+                                            if let uiImage = ImageStorage.shared.loadImage(fileName: path) {
+                                                ZStack(alignment: .topTrailing) {
+                                                    Image(uiImage: uiImage)
+                                                        .resizable()
+                                                        .scaledToFit()
+                                                        .frame(width: width, height: 260)
+                                                        .background(Color(.systemGray6))
+                                                    Button {
+                                                        viewModel.markImageForDeletion(path: path)
+                                                    } label: {
+                                                        Image(systemName: "xmark.circle.fill")
+                                                            .font(.title2)
+                                                            .foregroundColor(.white)
+                                                            .shadow(color: .black.opacity(0.5), radius: 2)
+                                                    }
+                                                    .padding(8)
+                                                }
                                             }
-                                            .buttonStyle(.plain)
-
-                                            // 削除ボタン
-                                            Button {
-                                                viewModel.state.existingImagePaths.removeAll { $0 == path }
-                                            } label: {
-                                                Image(systemName: SystemImage.Post.close)
-                                                    .foregroundColor(.white)
-                                                    .background(Color.black.opacity(0.5))
-                                                    .clipShape(Circle())
-                                            }
-                                            .padding(4)
                                         }
                                     }
                                 }
-                                // 新たに選んだ画像
-                                ForEach(viewModel.state.selectedImages, id: \.self) { image in
-                                    Button {
-                                        openPickerIfAllowed()
-                                    } label: {
-                                        Image(uiImage: image)
-                                            .resizable()
-                                            .scaledToFill()
-                                            .frame(width: 100, height: 100)
-                                            .clipped()
-                                            .cornerRadius(8)
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                                // 既存＋新規の合計が上限未満のときのみ追加ボタンを表示
-                                let totalImageCount = viewModel.state.existingImagePaths.count + viewModel.state.selectedImages.count
-                                if totalImageCount < viewModel.maxPhotoCount {
-                                    Button {
-                                        openPickerIfAllowed()
-                                    } label: {
-                                        ZStack {
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Color.gray.opacity(0.2))
-                                                .frame(width: 100, height: 100)
-                                            Image(systemName: SystemImage.Post.addImage)
-                                                .font(.title)
-                                        }
-                                    }
-                                }
+                                .scrollTargetLayout()
+                                .scrollTargetBehavior(.paging)
                             }
-                            .padding(.horizontal)
+                            .frame(height: 260)
                         }
 
                         // キャプション
                         VStack(alignment: .leading, spacing: 6) {
-                            Text(Message.Post.captionLabel)
-                                .font(.headline)
-                                .padding(.horizontal)
+                            HStack {
+                                Text(Message.Post.captionLabel)
+                                    .font(.headline)
+                                Spacer()
+                                Text("\(viewModel.state.caption.count) / \(Const.maxCaptionLength)")
+                                    .font(.caption)
+                                    .foregroundColor(viewModel.state.caption.count >= Const.maxCaptionLength ? .red : .secondary)
+                            }
+                            .padding(.horizontal)
                             TextEditor(text: $viewModel.state.caption)
                                 .frame(height: 150)
                                 .padding(8)
@@ -103,27 +77,22 @@ struct EditPostView: View {
                                 .cornerRadius(10)
                                 .padding(.horizontal)
                                 .focused($isCaptionFocused)
-                                .onChange(of: viewModel.state.caption) { newValue in
+                                .onChange(of: viewModel.state.caption) { _, newValue in
                                     if newValue.count > Const.maxCaptionLength {
                                         viewModel.state.caption = String(newValue.prefix(Const.maxCaptionLength))
                                     }
                                 }
-
-                            // 文字数カウンター
-                            HStack {
-                                Spacer()
-                                Text("\(viewModel.state.caption.count) / \(Const.maxCaptionLength)")
-                                    .font(.caption)
-                                    .foregroundColor(viewModel.state.caption.count >= Const.maxCaptionLength ? .red : .secondary)
-                            }
-                            .padding(.horizontal)
                         }
                     }
                     .padding(.top)
                 }
 
                 // 保存ボタン
-                Button(action: saveEdit) {
+                Button {
+                    viewModel.saveEdit(post: post, baseViewModel: baseViewModel) {
+                        dismiss()
+                    }
+                } label: {
                     Text(Message.Button.save)
                         .font(.headline)
                         .frame(maxWidth: .infinity)
@@ -141,7 +110,6 @@ struct EditPostView: View {
                 isCaptionFocused = false
             }
             .toolbar {
-                // ゴミ箱アイコンで投稿削除
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         viewModel.state.showDeleteConfirm = true
@@ -151,58 +119,49 @@ struct EditPostView: View {
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(Message.Button.cancel) {
-                        dismiss()
-                    }
-                }
-            }
-            .confirmationDialog(Message.Post.deleteConfirm, isPresented: $viewModel.state.showDeleteConfirm, titleVisibility: .visible) {
-                Button(Message.Button.delete, role: .destructive) {
-                    baseViewModel.deletePost(dto: post)
-                    dismiss()
-                }
-                Button(Message.Button.cancel, role: .cancel) {}
-            }
-            .onChange(of: viewModel.state.selectedItems) { newItems in
-                loadNewImages(from: newItems)
-            }
-            .photosPicker(
-                isPresented: $viewModel.state.showPhotoPicker,
-                selection: $viewModel.state.selectedItems,
-                maxSelectionCount: max(1, viewModel.maxPhotoCount - viewModel.state.existingImagePaths.count),
-                matching: .images
-            )
-        }
-    }
-
-    private func openPickerIfAllowed() {
-        let remaining = viewModel.maxPhotoCount - viewModel.state.existingImagePaths.count
-        guard remaining > 0 || !viewModel.state.selectedImages.isEmpty else { return }
-        viewModel.state.showPhotoPicker = true
-    }
-
-    private func saveEdit() {
-        let newPaths = viewModel.state.selectedImages.compactMap {
-            ImageStorage.shared.saveImage($0)
-        }
-        var updated = post
-        updated.caption = viewModel.state.caption
-        updated.imagePaths = viewModel.state.existingImagePaths + newPaths
-        baseViewModel.updatePost(dto: updated)
-        dismiss()
-    }
-
-    private func loadNewImages(from items: [PhotosPickerItem]) {
-        viewModel.state.selectedImages = []
-        for item in items {
-            Task {
-                if let data = try? await item.loadTransferable(type: Data.self),
-                   let uiImage = UIImage(data: data) {
-                    await MainActor.run {
-                        viewModel.state.selectedImages.append(uiImage)
+                    Button {
+                        if viewModel.hasUnsavedChanges {
+                            viewModel.state.showDiscardConfirm = true
+                        } else {
+                            dismiss()
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
                     }
                 }
             }
         }
+        .appPopup(
+            isPresented: $viewModel.state.showDeleteConfirm,
+            title: Message.Post.deleteConfirm,
+            destructiveLabel: Message.Button.delete,
+            onDestructive: {
+                baseViewModel.deletePost(dto: post)
+                dismiss()
+            }
+        )
+        .appPopup(
+            isPresented: $viewModel.state.showImageDeleteConfirm,
+            title: Message.Post.imageDeleteTitle,
+            message: Message.Post.imageDeleteMessage,
+            destructiveLabel: Message.Post.imageDelete,
+            onDestructive: {
+                viewModel.confirmDeleteImage()
+            },
+            onClose: {
+                viewModel.state.imagePathToDelete = nil
+            }
+        )
+        .appPopup(
+            isPresented: $viewModel.state.showDiscardConfirm,
+            title: Message.Common.discardTitle,
+            message: Message.Common.discardMessage,
+            destructiveLabel: Message.Common.discardButton,
+            onDestructive: {
+                dismiss()
+            }
+        )
     }
 }

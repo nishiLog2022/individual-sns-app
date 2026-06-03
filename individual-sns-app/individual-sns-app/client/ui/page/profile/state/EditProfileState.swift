@@ -10,8 +10,9 @@ struct EditProfileState {
     var name: String
     var selectedItem: PhotosPickerItem? = nil
     var previewImage: UIImage?
-    /// 画像を未設定に戻すかどうか
     var shouldRemoveImage: Bool = false
+    var showRemoveConfirm: Bool = false
+    var showDiscardConfirm: Bool = false
 
     init(baseViewModel: AppBaseViewModel) {
         self.name = baseViewModel.profileName

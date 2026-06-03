@@ -35,6 +35,8 @@ enum Message {
         static let folderNamePlaceholder = "フォルダ名"
         static let saveToFolder          = "フォルダに保存"
         static let deleteFolderConfirm   = "このフォルダを削除しますか？\nフォルダ内の投稿はコレクションから外れます。"
+        static let deleteFolderTitle     = "このフォルダを削除しますか？"
+        static let deleteFolderMessage   = "フォルダ内の投稿はコレクションから外れます。"
         static let renameFolder          = "名前を変更"
         static let renameFolderTitle     = "フォルダ名を変更"
     }
@@ -50,7 +52,18 @@ enum Message {
         static let captionLabel    = "キャプション"
         static let noImage         = "No Image"
         static let userName        = "My Diary"
-        static let deleteConfirm   = "この投稿を削除しますか？"
+        static let deleteConfirm      = "この投稿を削除しますか？"
+        static let imageDeleteTitle   = "この画像を削除しますか？"
+        static let imageDeleteMessage = "削除後は復元できません。"
+        static let imageDelete        = "削除"
+    }
+
+    // MARK: - 共通
+    enum Common {
+        static let discardTitle   = "編集内容を破棄しますか？"
+        static let discardMessage = "変更内容はリセットされます。"
+        static let discardButton  = "破棄する"
+        static let closeButton    = "閉じる"
     }
 
     // MARK: - スプラッシュ
