@@ -19,7 +19,7 @@ struct SavedPostListView: View {
                     Image(systemName: "bookmark.slash")
                         .font(.system(size: 52))
                         .foregroundColor(.secondary.opacity(0.4))
-                    Text("保存された投稿がありません")
+                    Text("コレクションされた投稿がありません")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

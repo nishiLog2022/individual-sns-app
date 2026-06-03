@@ -118,7 +118,7 @@ class AppBaseViewModel: ObservableObject {
             if let index = posts.firstIndex(where: { $0.trnPostId == post.trnPostId }) {
                 posts[index] = updated
             }
-            showToast("保存を解除しました")
+            showToast("コレクションを解除しました")
         } else {
             if let defaultFolder = folders.first(where: { $0.isDefault }) {
                 savePost(post, to: defaultFolder)
