@@ -13,6 +13,10 @@ class Const {
     static let getDataLimitForProfile: Int = 10
     // 投稿キャプションの最大文字数
     static let maxCaptionLength: Int = 1500
+    // フォルダ名の最大文字数
+    static let maxFolderNameLength: Int = 10
+    // プロフィール名の最大文字数
+    static let maxProfileNameLength: Int = 20
     // 利用規約のURL
     static let termsUrl: String = "https://toridoriblog.com/running-support-app-terms-of-service/"
     // プライバシーポリシーのURL

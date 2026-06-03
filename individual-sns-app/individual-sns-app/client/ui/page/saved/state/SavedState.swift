@@ -10,6 +10,8 @@ struct SavedState {
     var isEditMode: Bool = false
     var showBilling: Bool = false
     var folderToDelete: SaveFolderDto? = nil
+    var showDeleteFolderConfirm: Bool = false
     var folderToRename: SaveFolderDto? = nil
     var renameFolderName: String = ""
+    var showRenameFolder: Bool = false
 }
