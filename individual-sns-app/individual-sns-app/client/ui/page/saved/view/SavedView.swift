@@ -11,93 +11,99 @@ struct SavedView: View {
     private let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(baseViewModel.folders) { folder in
-                    NavigationLink {
-                        SavedPostListView(folder: folder, baseViewModel: baseViewModel)
-                    } label: {
-                        FolderGridCell(folder: folder, baseViewModel: baseViewModel)
-                    }
-                    .foregroundColor(.primary)
-                    .contextMenu {
-                        if !folder.isDefault {
-                            Button {
-                                viewModel.state.renameFolderName = folder.name
-                                viewModel.state.folderToRename = folder
-                                viewModel.state.showRenameFolder = true
-                            } label: {
-                                Label(Message.Folder.renameFolder, systemImage: "pencil")
-                            }
-                            Button(role: .destructive) {
-                                viewModel.state.folderToDelete = folder
-                            } label: {
-                                Label(Message.Button.delete, systemImage: "trash")
+        ZStack {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(baseViewModel.folders) { folder in
+                        NavigationLink {
+                            SavedPostListView(folder: folder, baseViewModel: baseViewModel)
+                        } label: {
+                            FolderGridCell(folder: folder, baseViewModel: baseViewModel)
+                        }
+                        .foregroundColor(.primary)
+                        .contextMenu {
+                            if !folder.isDefault {
+                                Button {
+                                    viewModel.state.renameFolderName = folder.name
+                                    viewModel.state.folderToRename = folder
+                                    viewModel.state.showRenameFolder = true
+                                } label: {
+                                    Label(Message.Folder.renameFolder, systemImage: "pencil")
+                                }
+                                Button(role: .destructive) {
+                                    viewModel.state.folderToDelete = folder
+                                    viewModel.state.showDeleteFolderConfirm = true
+                                } label: {
+                                    Label(Message.Button.delete, systemImage: "trash")
+                                }
                             }
                         }
                     }
                 }
+                .padding()
             }
-            .padding()
-        }
-        .navigationTitle(Page.saved.title)
-        .navigationBarTitleDisplayMode(.large)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    if viewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
-                        viewModel.state.showAddFolder = true
-                    } else {
-                        viewModel.state.showBilling = true
+            .navigationTitle(Page.saved.title)
+            .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        if viewModel.canAddFolder(currentFolderCount: baseViewModel.folders.count) {
+                            viewModel.state.showAddFolder = true
+                        } else {
+                            viewModel.state.showBilling = true
+                        }
+                    } label: {
+                        Image(systemName: "folder.badge.plus")
                     }
-                } label: {
-                    Image(systemName: "folder.badge.plus")
                 }
             }
-        }
-        .sheet(isPresented: $viewModel.state.showAddFolder, onDismiss: {
-            viewModel.state.newFolderName = ""
-        }) {
-            AddFolderSheet(
-                title: Message.Folder.addFolder,
-                actionLabel: Message.Folder.addFolder,
-                folderName: $viewModel.state.newFolderName
-            ) { trimmed in
-                baseViewModel.createFolder(name: trimmed)
-            }
-        }
-        .sheet(isPresented: $viewModel.state.showRenameFolder, onDismiss: {
-            viewModel.state.renameFolderName = ""
-            viewModel.state.folderToRename = nil
-        }) {
-            AddFolderSheet(
-                title: Message.Folder.renameFolderTitle,
-                actionLabel: Message.Folder.renameFolder,
-                folderName: $viewModel.state.renameFolderName
-            ) { trimmed in
-                if let folder = viewModel.state.folderToRename {
-                    baseViewModel.renameFolder(folder, newName: trimmed)
+            .sheet(isPresented: $viewModel.state.showAddFolder, onDismiss: {
+                viewModel.state.newFolderName = ""
+            }) {
+                AddFolderSheet(
+                    title: Message.Folder.addFolder,
+                    actionLabel: Message.Folder.addFolder,
+                    folderName: $viewModel.state.newFolderName
+                ) { trimmed in
+                    baseViewModel.createFolder(name: trimmed)
                 }
             }
-        }
-        .sheet(isPresented: $viewModel.state.showBilling) {
-            BillingView()
-        }
-        .alert(
-            Message.Folder.deleteFolderConfirm,
-            isPresented: Binding(
-                get: { viewModel.state.folderToDelete != nil },
-                set: { if !$0 { viewModel.state.folderToDelete = nil } }
-            )
-        ) {
-            Button(Message.Button.delete, role: .destructive) {
-                if let folder = viewModel.state.folderToDelete {
-                    baseViewModel.deleteFolder(folder)
+            .sheet(isPresented: $viewModel.state.showRenameFolder, onDismiss: {
+                viewModel.state.renameFolderName = ""
+                viewModel.state.folderToRename = nil
+            }) {
+                AddFolderSheet(
+                    title: Message.Folder.renameFolderTitle,
+                    actionLabel: Message.Folder.renameFolder,
+                    folderName: $viewModel.state.renameFolderName
+                ) { trimmed in
+                    if let folder = viewModel.state.folderToRename {
+                        baseViewModel.renameFolder(folder, newName: trimmed)
+                    }
                 }
-                viewModel.state.folderToDelete = nil
             }
-            Button(Message.Button.cancel, role: .cancel) {
-                viewModel.state.folderToDelete = nil
+            .sheet(isPresented: $viewModel.state.showBilling) {
+                BillingView()
+            }
+
+            if viewModel.state.showDeleteFolderConfirm {
+                AppPopup(
+                    title: Message.Folder.deleteFolderTitle,
+                    message: Message.Folder.deleteFolderMessage,
+                    destructiveLabel: Message.Button.delete,
+                    onDestructive: {
+                        if let folder = viewModel.state.folderToDelete {
+                            baseViewModel.deleteFolder(folder)
+                        }
+                        viewModel.state.folderToDelete = nil
+                        viewModel.state.showDeleteFolderConfirm = false
+                    },
+                    closeLabel: Message.Common.closeButton,
+                    onClose: {
+                        viewModel.state.folderToDelete = nil
+                        viewModel.state.showDeleteFolderConfirm = false
+                    }
+                )
             }
         }
     }

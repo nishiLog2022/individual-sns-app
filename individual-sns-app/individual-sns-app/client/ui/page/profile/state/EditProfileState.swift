@@ -12,6 +12,7 @@ struct EditProfileState {
     var previewImage: UIImage?
     var shouldRemoveImage: Bool = false
     var showRemoveConfirm: Bool = false
+    var showDiscardConfirm: Bool = false
 
     init(baseViewModel: AppBaseViewModel) {
         self.name = baseViewModel.profileName

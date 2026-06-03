@@ -4,62 +4,43 @@
 //
 import Foundation
 import SwiftUI
-import PhotosUI
 
 class EditPostViewModel: ObservableObject {
-    private let billingUsecase: BillingUsecaseProtocol =
-        DiContainer.shared.container.resolve(BillingUsecaseProtocol.self)!
-
     @Published var state: EditPostState
-    var loadTask: Task<Void, Never>? = nil
-
-    var maxPhotoCount: Int {
-        billingUsecase.maxPhotoCount
-    }
+    private let originalPost: PostDto
 
     init(post: PostDto) {
+        self.originalPost = post
         self.state = EditPostState(post: post)
     }
 
-    func openPickerIfAllowed() {
-        let remaining = maxPhotoCount - state.existingImagePaths.count
-        guard remaining > 0 || !state.selectedImages.isEmpty else { return }
-        state.showPhotoPicker = true
+    var visibleImagePaths: [String] {
+        state.existingImagePaths.filter { !state.imagesToDelete.contains($0) }
     }
 
-    func loadNewImages(from items: [PhotosPickerItem]) {
-        loadTask?.cancel()
-        state.isLoadingImages = true
-        loadTask = Task {
-            var loaded: [UIImage?] = Array(repeating: nil, count: items.count)
-            await withTaskGroup(of: (Int, UIImage?).self) { group in
-                for (index, item) in items.enumerated() {
-                    group.addTask {
-                        guard let data = try? await item.loadTransferable(type: Data.self),
-                              let uiImage = UIImage(data: data) else { return (index, nil) }
-                        return (index, uiImage)
-                    }
-                }
-                for await (index, image) in group {
-                    loaded[index] = image
-                }
-            }
-            guard !Task.isCancelled else { return }
-            let result = loaded.compactMap { $0 }
-            await MainActor.run { [weak self] in
-                self?.state.selectedImages = result
-                self?.state.isLoadingImages = false
-            }
-        }
+    var hasUnsavedChanges: Bool {
+        state.caption != originalPost.caption || !state.imagesToDelete.isEmpty
+    }
+
+    func markImageForDeletion(path: String) {
+        state.imagePathToDelete = path
+        state.showImageDeleteConfirm = true
+    }
+
+    func confirmDeleteImage() {
+        guard let path = state.imagePathToDelete else { return }
+        state.imagesToDelete.append(path)
+        state.imagePathToDelete = nil
+        state.showImageDeleteConfirm = false
     }
 
     func saveEdit(post: PostDto, baseViewModel: AppBaseViewModel, onComplete: () -> Void) {
-        let newPaths = state.selectedImages.compactMap {
-            ImageStorage.shared.saveImage($0)
+        for path in state.imagesToDelete {
+            ImageStorage.shared.deleteImage(fileName: path)
         }
         var updated = post
         updated.caption = state.caption
-        updated.imagePaths = state.existingImagePaths + newPaths
+        updated.imagePaths = state.existingImagePaths.filter { !state.imagesToDelete.contains($0) }
         baseViewModel.updatePost(dto: updated)
         onComplete()
     }

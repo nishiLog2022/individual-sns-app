@@ -10,6 +10,7 @@ struct AddFolderSheet: View {
     @Binding var folderName: String
     let onSave: (String) -> Void
     @Environment(\.dismiss) private var dismiss
+    @State private var showDiscardConfirm = false
 
     var body: some View {
         NavigationView {
@@ -52,9 +53,28 @@ struct AddFolderSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(Message.Button.cancel) { dismiss() }
+                    Button {
+                        if folderName.trimmingCharacters(in: .whitespaces).isEmpty {
+                            dismiss()
+                        } else {
+                            showDiscardConfirm = true
+                        }
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.subheadline)
+                            .foregroundColor(.primary)
+                    }
                 }
             }
         }
+        .appPopup(
+            isPresented: $showDiscardConfirm,
+            title: Message.Common.discardTitle,
+            message: Message.Common.discardMessage,
+            destructiveLabel: Message.Common.discardButton,
+            onDestructive: {
+                dismiss()
+            }
+        )
     }
 }
