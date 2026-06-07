@@ -101,7 +101,7 @@ enum Message {
         static let loadingProduct     = "商品情報を読み込み中..."
         // 機能比較
         static let featureFolder      = "フォルダ数"
-        static let featureFolderFree  = "1個まで"
+        static let featureFolderFree  = "\(Const.freeFolderLimit-1)個まで"
         static let featureFolderPremium = "無制限"
         static let featurePhoto       = "写真枚数"
         static let featurePhotoFree   = "\(Const.freeMaxPhotoCount)枚まで"
