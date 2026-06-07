@@ -9,6 +9,16 @@ struct AppUpdateService {
     /// App Storeの最新バージョン情報を取得し、アップデート種別とApp Store URLを返す。
     /// - Returns: アップデートが不要または取得失敗の場合は nil
     func checkForUpdate() async -> (type: AppUpdateType, appStoreURL: URL)? {
+#if DEBUG
+        // ── 開発時の動作確認用 ──────────────────────────────────────
+        // .optional または .forced に変更してシミュレーター/実機で確認できる。
+        // 確認が終わったらこのブロックをコメントアウトすること。
+//         let debugURL = URL(string: "https://apps.apple.com/jp/app/id000000000")!
+//         return (.optional, debugURL)
+//         return (.forced, debugURL)
+        // ────────────────────────────────────────────────────────────
+#endif
+
         guard let info = await fetchAppStoreInfo() else { return nil }
         guard isNewer(info.version, than: currentVersion) else { return nil }
 
