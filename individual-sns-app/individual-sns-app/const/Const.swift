@@ -24,7 +24,7 @@ class Const {
     // 課金: プレミアムプランの商品ID（App Store Connectで設定するProduct ID）
     static let premiumProductId: String = "individual_sns_app_premium"
     // 課金: 無料プランのフォルダ数上限（デフォルトコレクションフォルダ + 1つまで追加可能）
-    static let freeFolderLimit: Int = 2
+    static let freeFolderLimit: Int = 3
     // 課金: 無料プランの写真枚数上限
     static let freeMaxPhotoCount: Int = 3
     // 課金: プレミアムプランの写真枚数上限
