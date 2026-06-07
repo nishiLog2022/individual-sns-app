@@ -58,6 +58,16 @@ enum Message {
         static let imageDelete        = "削除"
     }
 
+    // MARK: - アップデート
+    enum Update {
+        static let optionalTitle   = "アップデートのお知らせ"
+        static let optionalMessage = "新しいバージョンが利用可能です。\n最新版をお試しください。"
+        static let forcedTitle     = "アップデートが必要です"
+        static let forcedMessage   = "継続してご利用いただくには\nアップデートが必要です。"
+        static let updateButton    = "アップデート"
+        static let laterButton     = "後で"
+    }
+
     // MARK: - 共通
     enum Common {
         static let discardTitle   = "編集内容を破棄しますか？"

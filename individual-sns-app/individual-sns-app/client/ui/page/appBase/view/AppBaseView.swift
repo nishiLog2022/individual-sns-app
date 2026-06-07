@@ -77,6 +77,15 @@ struct AppBaseView: View {
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                 .allowsHitTesting(false)
         }
+
+        // アップデート案内（トースト等より上に表示）
+        if case .none = baseViewModel.appUpdateType {} else {
+            AppUpdatePrompt(
+                updateType: baseViewModel.appUpdateType,
+                onUpdate: { baseViewModel.openAppStore() },
+                onDismiss: { baseViewModel.dismissUpdate() }
+            )
+        }
         }
         .animation(.easeInOut(duration: 0.3), value: baseViewModel.toastMessage)
     }

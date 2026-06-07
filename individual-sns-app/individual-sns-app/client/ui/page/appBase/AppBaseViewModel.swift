@@ -18,6 +18,8 @@ class AppBaseViewModel: ObservableObject {
     @Published var folders: [SaveFolderDto] = []
     @Published var selectedTab: Int = 0
     @Published var toastMessage: String? = nil
+    @Published var appUpdateType: AppUpdateType = .none
+    private var appStoreURL: URL? = nil
 
     // MARK: - プロフィール
     @Published var profileName: String {
@@ -43,6 +45,25 @@ class AppBaseViewModel: ObservableObject {
         // 起動時にバックグラウンドでStoreKit購入状態を同期
         let billingUsecase = DiContainer.shared.container.resolve(BillingUsecaseProtocol.self)!
         Task { await billingUsecase.syncPremiumStatus() }
+        // 起動時にアプリアップデートを確認
+        Task { await checkForAppUpdate() }
+    }
+
+    func openAppStore() {
+        guard let url = appStoreURL else { return }
+        UIApplication.shared.open(url)
+    }
+
+    func dismissUpdate() {
+        appUpdateType = .none
+    }
+
+    private func checkForAppUpdate() async {
+        guard let result = await AppUpdateService().checkForUpdate() else { return }
+        await MainActor.run { [weak self] in
+            self?.appStoreURL = result.appStoreURL
+            self?.appUpdateType = result.type
+        }
     }
 
     func updateProfile(name: String, image: UIImage?, shouldRemoveImage: Bool = false) {
